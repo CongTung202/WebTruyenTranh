@@ -4,7 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-$host = '127.0.0.1';
+$host = 'localhost';
 $db   = 'mangawebsite';
 $user = 'root';
 $pass = '123456'; // Password của XAMPP thường là rỗng
