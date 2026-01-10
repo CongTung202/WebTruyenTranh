@@ -1,14 +1,43 @@
 <?php
 // includes/right_sidebar.php
-// includes/right_sidebar.php
-require_once __DIR__ . '/functions.php'; // Đảm bảo hàm getImageUrl có sẵn
-// 1. Lấy Top 5 truyện xem nhiều nhất
+require_once __DIR__ . '/functions.php';
+
+// 1. Top truyện (Giữ nguyên)
 $stmtTop = $pdo->query("SELECT * FROM articles WHERE IsDeleted = 0 ORDER BY ViewCount DESC LIMIT 5");
 $topArticles = $stmtTop->fetchAll();
 
-// 2. Lấy Lịch sử đọc từ Cookie
-$cookieName = 'manga_history';
-$historyData = isset($_COOKIE[$cookieName]) ? json_decode($_COOKIE[$cookieName], true) : [];
+// 2. [CẬP NHẬT] Lấy Lịch sử
+$historyData = [];
+
+if (isset($_SESSION['user_id'])) {
+    // Nếu đã đăng nhập -> Lấy 5 truyện gần nhất từ DB
+    $sql = "SELECT h.LastReadAt as time, 
+                   a.ArticleID as id, a.Title as title, a.CoverImage as image,
+                   c.ChapterID as chap_id, c.`Index` as chap_index
+            FROM history h
+            JOIN articles a ON h.ArticleID = a.ArticleID
+            JOIN chapters c ON h.ChapterID = c.ChapterID
+            WHERE h.UserID = ?
+            ORDER BY h.LastReadAt DESC LIMIT 5";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$_SESSION['user_id']]);
+    $rows = $stmt->fetchAll();
+
+    foreach ($rows as $row) {
+        $historyData[] = [
+            'id' => $row['id'],
+            'title' => $row['title'],
+            'image' => $row['image'],
+            'chap_id' => $row['chap_id'],
+            'chap_index' => $row['chap_index'],
+            'time' => strtotime($row['time'])
+        ];
+    }
+} else {
+    // Nếu chưa đăng nhập -> Lấy từ Cookie
+    $cookieName = 'manga_history';
+    $historyData = isset($_COOKIE[$cookieName]) ? json_decode($_COOKIE[$cookieName], true) : [];
+}
 ?>
 
 <style>
@@ -127,18 +156,5 @@ $historyData = isset($_COOKIE[$cookieName]) ? json_decode($_COOKIE[$cookieName],
         </div>
         <?php $rank++; endforeach; ?>
     </div>
-
-    <div class="aside-header">
-        <h3 class="aside-title">Thông báo</h3>
-        <a href="#" class="small">Xem thêm ></a>
-    </div>
-    
-    <ul class="notice-list">
-        <li class="notice-item"><a href="#" class="notice-link"><strong>[Thông báo]</strong> Bảo trì hệ thống ngày 12/10</a></li>
-        <li class="notice-item"><a href="#" class="notice-link"><strong>[Sự kiện]</strong> Đua top nhận quà khủng</a></li>
-        <li class="notice-item"><a href="#" class="notice-link">Chính sách bản quyền mới 2024</a></li>
-        <li class="notice-item"><a href="#" class="notice-link">Tuyển dụng Editor/Translator lương cao</a></li>
-        <li class="notice-item"><a href="#" class="notice-link">Lịch ra chương tuần này</a></li>
-    </ul>
 
 </div>

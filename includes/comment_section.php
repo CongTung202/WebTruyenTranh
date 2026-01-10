@@ -1,35 +1,34 @@
 <?php
 // includes/comment_section.php
 
-// 1. Kiểm tra biến đầu vào (Quan trọng)
+// 1. Kiểm tra biến đầu vào
 if (!isset($id)) return;
 
-// Mặc định URL quay về nếu chưa được set ở file cha
 if (!isset($currentUrl)) {
     $currentUrl = "../detail.php?id=$id#comments";
+}
+
+// --- HÀM HỖ TRỢ HIỂN THỊ AVATAR (Viết nhỏ gọn ngay đây để dùng cho cả 2 chỗ) ---
+function getAvatarLink($path, $username) {
+    if (!empty($path)) {
+        // Nếu đường dẫn chứa 'http' (Cloudinary/Link ngoài) -> Dùng nguyên gốc
+        if (strpos($path, 'http') === 0) {
+            return $path;
+        }
+        // Nếu là file nội bộ -> Nối thêm BASE_URL
+        return BASE_URL . $path;
+    }
+    // Nếu không có avatar -> Tạo avatar chữ cái
+    return 'https://ui-avatars.com/api/?name=' . urlencode($username) . '&background=random&color=fff&size=128';
 }
 ?>
 
 <style>
-    /* CSS giữ nguyên như cũ của bạn... */
-    .comment-box { 
-        margin-top: 20px; 
-        background-color: var(--bg-element); 
-        padding: 20px; 
-        border-radius: 4px; 
-        border: 1px solid var(--border-color);
-    }
-    .comment-header { 
-        font-weight: bold; font-size: 18px; color: var(--text-main); margin-bottom: 20px; 
-        padding-bottom: 10px; border-bottom: 2px solid var(--border-color); 
-        display: flex; justify-content: space-between; align-items: center;
-    }
-    .cmt-form-wrapper { 
-        background-color: var(--bg-body); padding: 15px; border-radius: 4px; border: 1px solid var(--border-color); margin-bottom: 30px;
-    }
-    .cmt-input { 
-        width: 100%; background: transparent; border: none; resize: none; color: var(--text-main); font-size: 14px; outline: none; min-height: 60px;
-    }
+    /* CSS giữ nguyên */
+    .comment-box { margin-top: 20px; background-color: var(--bg-element); padding: 20px; border-radius: 4px; border: 1px solid var(--border-color); }
+    .comment-header { font-weight: bold; font-size: 18px; color: var(--text-main); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+    .cmt-form-wrapper { background-color: var(--bg-body); padding: 15px; border-radius: 4px; border: 1px solid var(--border-color); margin-bottom: 30px; }
+    .cmt-input { width: 100%; background: transparent; border: none; resize: none; color: var(--text-main); font-size: 14px; outline: none; min-height: 60px; }
     .cmt-submit-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 10px; }
     .btn-cmt-post { background-color: var(--primary-theme); color: #fff; border: none; padding: 6px 20px; font-size: 13px; font-weight: bold; border-radius: 3px; }
     .cmt-list { list-style: none; padding: 0; margin: 0; }
@@ -49,7 +48,6 @@ if (!isset($currentUrl)) {
         <div class="cmt-form-wrapper">
             <form action="includes/post_comment.php" method="POST">
                 <input type="hidden" name="article_id" value="<?= $id ?>">
-                
                 <input type="hidden" name="redirect_url" value="<?= $currentUrl ?>">
                 
                 <textarea name="content" class="cmt-input" placeholder="Bạn nghĩ gì về truyện này? Hãy để lại bình luận nhé..." required></textarea>
@@ -57,9 +55,11 @@ if (!isset($currentUrl)) {
                 <div class="cmt-submit-row">
                     <div class="d-flex align-items-center">
                         <?php 
-                        $myAvatar = !empty($_SESSION['avatar']) ? BASE_URL . $_SESSION['avatar'] : 'https://ui-avatars.com/api/?name=' . urlencode($_SESSION['username']) . '&background=506891&color=fff&size=64';
+                            // [FIX LỖI 1] Avatar của người đang đăng nhập
+                            $myAvatarPath = $_SESSION['avatar'] ?? '';
+                            $myAvatarUrl = getAvatarLink($myAvatarPath, $_SESSION['username']);
                         ?>
-                        <img src="<?= $myAvatar ?>" class="current-user-avatar">
+                        <img src="<?= $myAvatarUrl ?>" class="current-user-avatar">
                         <span style="color: var(--text-main); font-weight: bold; font-size: 13px;"><?= htmlspecialchars($_SESSION['username']) ?></span>
                     </div>
                     <button type="submit" class="btn-cmt-post">Đăng</button>
@@ -93,8 +93,8 @@ if (!isset($currentUrl)) {
         <?php if (count($comments) > 0): ?>
             <?php foreach ($comments as $cmt): ?>
                 <?php 
-                // [FIX LỖI] Lấy avatar của người comment, KHÔNG phải của người đang xem
-                $cmtUserAvatar = !empty($cmt['Avatar']) ? BASE_URL . $cmt['Avatar'] : 'https://ui-avatars.com/api/?name=' . urlencode($cmt['UserName']) . '&background=random&color=fff&size=128';
+                    // [FIX LỖI 2] Avatar trong danh sách
+                    $cmtUserAvatar = getAvatarLink($cmt['Avatar'], $cmt['UserName']);
                 ?>
                 <li class="cmt-item">
                     <img src="<?= $cmtUserAvatar ?>" class="cmt-avatar" alt="Avatar">

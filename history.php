@@ -1,18 +1,54 @@
 <?php
 // history.php
 require_once 'includes/db.php';
-require_once 'includes/functions.php'; // Để dùng getImageUrl
+require_once 'includes/functions.php';
 
-// Xử lý: XÓA LỊCH SỬ (Nếu bấm nút Xóa)
+// Xử lý Xóa lịch sử
 if (isset($_POST['clear_history'])) {
-    setcookie('manga_history', '', time() - 3600, "/"); // Set thời gian về quá khứ để xóa
+    if (isset($_SESSION['user_id'])) {
+        // Xóa trong DB
+        $pdo->prepare("DELETE FROM history WHERE UserID = ?")->execute([$_SESSION['user_id']]);
+    }
+    // Xóa cả Cookie cho chắc
+    setcookie('manga_history', '', time() - 3600, "/");
     header("Location: history.php");
     exit;
 }
 
-// Lấy dữ liệu từ Cookie
-$cookieName = 'manga_history';
-$historyData = isset($_COOKIE[$cookieName]) ? json_decode($_COOKIE[$cookieName], true) : [];
+$historyData = [];
+
+// [LOGIC MỚI] Lấy dữ liệu
+if (isset($_SESSION['user_id'])) {
+    // --- TRƯỜNG HỢP 1: ĐÃ ĐĂNG NHẬP (Lấy từ DB) ---
+    $sql = "SELECT h.LastReadAt as time, 
+                   a.ArticleID as id, a.Title as title, a.CoverImage as image,
+                   c.ChapterID as chap_id, c.`Index` as chap_index
+            FROM history h
+            JOIN articles a ON h.ArticleID = a.ArticleID
+            JOIN chapters c ON h.ChapterID = c.ChapterID
+            WHERE h.UserID = ?
+            ORDER BY h.LastReadAt DESC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$_SESSION['user_id']]);
+    $dbHistory = $stmt->fetchAll();
+
+    // Chuẩn hóa dữ liệu để giống cấu trúc Cookie (để vòng lặp bên dưới không bị lỗi)
+    foreach ($dbHistory as $row) {
+        $historyData[] = [
+            'id' => $row['id'],
+            'title' => $row['title'],
+            'image' => $row['image'],
+            'chap_id' => $row['chap_id'],
+            'chap_index' => $row['chap_index'],
+            'time' => strtotime($row['time']) // Chuyển datetime MySQL sang timestamp
+        ];
+    }
+
+} else {
+    // --- TRƯỜNG HỢP 2: KHÁCH (Lấy từ Cookie) ---
+    $cookieName = 'manga_history';
+    $historyData = isset($_COOKIE[$cookieName]) ? json_decode($_COOKIE[$cookieName], true) : [];
+}
 
 $pageTitle = "Lịch sử đọc truyện";
 require_once 'includes/header.php';

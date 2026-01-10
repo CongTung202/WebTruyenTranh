@@ -27,7 +27,7 @@ $chapter = $stmt->fetch();
 
 if (!$chapter) die("Chapter không tồn tại.");
 
-// --- [CODE MỚI] LƯU LỊCH SỬ ĐỌC VÀO COOKIE ---
+// --- [CODE CŨ] LƯU LỊCH SỬ ĐỌC VÀO COOKIE (Cho khách & Backup) ---
 $cookieName = 'manga_history';
 $history = isset($_COOKIE[$cookieName]) ? json_decode($_COOKIE[$cookieName], true) : [];
 
@@ -54,6 +54,22 @@ $history = array_slice($history, 0, 5);
 
 // 4. Lưu Cookie (Quan trọng: set path là "/" để nhận trên toàn domain)
 setcookie($cookieName, json_encode($history), time() + (86400 * 30), "/");
+
+// --- [CODE MỚI] LƯU DATABASE (Cho thành viên đã đăng nhập) ---
+if (isset($_SESSION['user_id'])) {
+    $userId = $_SESSION['user_id'];
+    
+    // Sử dụng ON DUPLICATE KEY UPDATE: 
+    // Nếu User đã đọc truyện này rồi thì chỉ cập nhật ChapterID và thời gian mới nhất
+    // (Dựa vào UNIQUE KEY `User_Article_Unique` trong Database)
+    $sqlHistory = "INSERT INTO history (UserID, ArticleID, ChapterID, LastReadAt) 
+                   VALUES (?, ?, ?, NOW()) 
+                   ON DUPLICATE KEY UPDATE ChapterID = VALUES(ChapterID), LastReadAt = NOW()";
+    
+    $stmtHist = $pdo->prepare($sqlHistory);
+    // Lưu ý: $articleId lấy từ $_GET, $chapterId lấy từ $_GET
+    $stmtHist->execute([$userId, $articleId, $chapterId]);
+}
 // ---------------------------------------------
 
 // 3. Lấy ảnh nội dung
