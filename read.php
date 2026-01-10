@@ -1,24 +1,22 @@
 <?php
 require_once 'includes/db.php';
+require_once 'includes/functions.php'; // Gọi file này để dùng getImageUrl nếu cần
 
 $articleId = $_GET['id'] ?? null;
 $chapterId = $_GET['chap'] ?? null;
 if (!$chapterId) die("Lỗi: Không tìm thấy chapter.");
 
 // 1. Tăng View (Có kiểm tra Session)
-// --- [LOGIC MỚI] ---
 if (session_status() === PHP_SESSION_NONE) session_start();
 
 if (!isset($_SESSION['viewed_chapters'])) {
     $_SESSION['viewed_chapters'] = [];
 }
 
-// Nếu ChapterID chưa có trong danh sách đã xem -> Tăng view
 if (!in_array($chapterId, $_SESSION['viewed_chapters'])) {
     $pdo->prepare("UPDATE chapters SET ViewCount = ViewCount + 1 WHERE ChapterID = ?")->execute([$chapterId]);
-    $_SESSION['viewed_chapters'][] = $chapterId; // Đánh dấu đã xem
+    $_SESSION['viewed_chapters'][] = $chapterId; 
 }
-// -------------------
 
 // 2. Lấy thông tin Chapter & Truyện
 $stmt = $pdo->prepare("
@@ -46,7 +44,7 @@ $stmtNext = $pdo->prepare("SELECT ChapterID FROM chapters WHERE ArticleID = ? AN
 $stmtNext->execute([$articleId, $chapter['Index']]);
 $nextChap = $stmtNext->fetch();
 
-// 5. Kiểm tra Bookmark
+// 5. Kiểm tra Bookmark (Để hiển thị trạng thái ban đầu của nút)
 $isBookmarked = false;
 if (isset($_SESSION['user_id'])) {
     $stmtCheck = $pdo->prepare("SELECT BookmarkID FROM bookmarks WHERE UserID = ? AND ArticleID = ?");
@@ -54,23 +52,32 @@ if (isset($_SESSION['user_id'])) {
     if ($stmtCheck->rowCount() > 0) $isBookmarked = true;
 }
 
-// Gọi Header (Lúc này header KHÔNG còn mở main-container nữa nên layout sẽ không bị chia đôi)
 require_once 'includes/header.php';
 ?>
 
 <link rel="stylesheet" href="<?= BASE_URL ?>css/chapter.css">
 
 <style>
-    /* Đảm bảo nền đen bao phủ toàn bộ */
+    /* Nền đen cho trang đọc */
     body { background-color: var(--bg-body); overflow-x: hidden; }
     
-    /* Container bình luận riêng cho trang đọc */
-    .reader-comments {
-        max-width: var(--viewer-width); /* 690px */
+    /* Vùng chứa bình luận: Rộng bằng vùng ảnh truyện */
+    .reader-comments-wrapper {
+        max-width: 800px; /* Độ rộng vừa phải để dễ đọc */
         margin: 0 auto;
-        padding-top: 30px;
-        padding-bottom: 50px;
-        border-top: 1px solid var(--border-color);
+        padding: 40px 15px;
+        background-color: var(--bg-element);
+        border-radius: 8px;
+        margin-top: 50px;
+        margin-bottom: 50px;
+        border: 1px solid var(--border-color);
+    }
+    
+    .reader-comments-wrapper h3 {
+        color: var(--text-main);
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 15px;
+        margin-bottom: 20px;
     }
 </style>
 
@@ -94,15 +101,13 @@ require_once 'includes/header.php';
     </div>
 
     <div class="toolbar-right">
-        <?php if ($isBookmarked): ?>
-            <button class="btn-toolbar btn-interest" onclick="window.location.href='includes/action_bookmark.php?id=<?= $articleId ?>&redirect=read&chap=<?= $chapterId ?>'">
-                <i class="fa-solid fa-check-circle"></i> Đã theo dõi
-            </button>
-        <?php else: ?>
-            <button class="btn-toolbar btn-interest" onclick="window.location.href='includes/action_bookmark.php?id=<?= $articleId ?>&redirect=read&chap=<?= $chapterId ?>'">
-                <i class="fa-solid fa-circle-plus"></i> Theo dõi
-            </button>
-        <?php endif; ?>
+        <button id="btn-follow" class="btn-toolbar btn-interest" data-id="<?= $articleId ?>">
+            <?php if ($isBookmarked): ?>
+                <i class="fa-solid fa-check-circle"></i> <span>Đã theo dõi</span>
+            <?php else: ?>
+                <i class="fa-solid fa-circle-plus"></i> <span>Theo dõi</span>
+            <?php endif; ?>
+        </button>
 
         <span class="divider">|</span>
         <a href="detail.php?id=<?= $articleId ?>#chapter-list" class="btn-toolbar">
@@ -132,7 +137,7 @@ require_once 'includes/header.php';
     </div>
 
     <div class="viewer-footer">
-        <p style="margin-bottom: 20px;">Hết Chapter <?= $chapter['Index'] ?></p>
+        <p style="margin-bottom: 20px; color: var(--text-muted);">Hết Chapter <?= $chapter['Index'] ?></p>
         
         <div style="display: flex; justify-content: center; gap: 15px;">
             <a href="<?= $prevChap ? "read.php?id=$articleId&chap={$prevChap['ChapterID']}" : '#' ?>" 
@@ -154,16 +159,52 @@ require_once 'includes/header.php';
         </div>
     </div>
     
-    <div class="reader-comments" id="comments">
-        <?php require_once 'includes/comment_section.php'; ?>
+    <div class="reader-comments-wrapper" id="comment-section">
+        <h3><i class="fas fa-comments me-2"></i>Bình luận</h3>
+        <?php 
+        // [SỬA LỖI] Gán biến $id để file comment_section.php hiểu được
+        $id = $articleId; 
+        
+        // Tạo biến redirect để khi bình luận xong thì quay lại đúng trang đọc truyện này
+        $currentUrl = "../read.php?id=$articleId&chap=$chapterId#comment-section";
+        
+        require_once 'includes/comment_section.php'; 
+        ?>
     </div>
 
 </main>
 
-<?php 
-// Không gọi footer.php ở đây vì giao diện Reader thường tối giản, 
-// nhưng nếu muốn bạn có thể uncomment dòng dưới
-// require_once 'includes/footer.php'; 
-?>
+<script>
+document.getElementById('btn-follow').addEventListener('click', function() {
+    const btn = this;
+    const articleId = btn.getAttribute('data-id');
+    const icon = btn.querySelector('i');
+    const text = btn.querySelector('span');
+
+    // Gọi API (Backend)
+    fetch('includes/action_bookmark.php?ajax=1&id=' + articleId)
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            if (data.is_bookmarked) {
+                // Đã theo dõi
+                icon.className = 'fa-solid fa-check-circle';
+                text.innerText = 'Đã theo dõi';
+            } else {
+                // Hủy theo dõi
+                icon.className = 'fa-solid fa-circle-plus';
+                text.innerText = 'Theo dõi';
+            }
+        } else if (data.status === 'login_required') {
+            alert("Vui lòng đăng nhập để theo dõi truyện!");
+            window.location.href = 'login.php';
+        } else {
+            alert(data.message || 'Có lỗi xảy ra');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+</script>
+
 </body>
 </html>

@@ -21,12 +21,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($stmt->rowCount() > 0) {
             $error = "Tên đăng nhập hoặc Email đã được sử dụng.";
         } else {
-            // 3. Thêm vào DB
-            $sql = "INSERT INTO users (UserName, Email, Password, Role) VALUES (?, ?, ?, 0)";
+            // [THAY ĐỔI Ở ĐÂY] Đặt ảnh mặc định
+            // Lưu ý: Bạn cần upload file 'defaultavatar.png' lên thư mục gốc (public_html)
+            $defaultAvatar = 'default/defaultavatar.png'; 
+
+            // 3. Thêm vào DB (Thêm cột Avatar vào câu lệnh INSERT)
+            $sql = "INSERT INTO users (UserName, Email, Password, Role, Avatar) VALUES (?, ?, ?, 0, ?)";
             $stmtInsert = $pdo->prepare($sql);
             
-            if ($stmtInsert->execute([$username, $email, $password])) {
-                $success = "Đăng ký thành công!";
+            // Truyền thêm biến $defaultAvatar vào mảng execute
+            if ($stmtInsert->execute([$username, $email, $password, $defaultAvatar])) {
+                $success = "Đăng ký thành công! Đang chuyển hướng...";
+                echo "<script>setTimeout(function(){ window.location.href = 'login.php'; }, 2000);</script>";
             } else {
                 $error = "Có lỗi xảy ra, vui lòng thử lại.";
             }
@@ -36,104 +42,84 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng ký - GTSCHUNDER</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/login.css">
-    
-    <style>
-        .error-msg {
-            color: #ff4d4d; font-size: 13px; text-align: center; margin-bottom: 15px;
-            padding: 10px; background: rgba(255, 77, 77, 0.1); border: 1px solid #ff4d4d; border-radius: 4px;
-        }
-        .success-msg {
-            color: #00c300; font-size: 13px; text-align: center; margin-bottom: 15px;
-            padding: 10px; background: rgba(0, 195, 0, 0.1); border: 1px solid #00c300; border-radius: 4px;
-        }
-        a.tab-item { text-decoration: none; display: block; }
-        
-        /* Ghi đè style bo góc cho form đăng ký vì có nhiều input hơn */
-        .reg-group input { border-radius: 0; }
-        .reg-group:first-child input { border-radius: 4px 4px 0 0; }
-        .reg-group:last-child input { border-radius: 0 0 4px 4px; }
-        /* Reset border-top cho các input ở giữa để tránh bị double border */
-        .reg-group:not(:first-child) input { border-top: none; }
-        .reg-group:not(:first-child) input:focus { border-top: 1px solid var(--primary-theme); margin-top: -1px; }
-
-    </style>
+    <link rel="stylesheet" href="css/login.css?v=<?= time() ?>">
 </head>
 <body>
 
+    <div class="lang-dropdown">
+        English <i class="fas fa-chevron-down ms-1"></i>
+    </div>
+
     <div class="login-wrapper">
         
-        <div class="lang-selector">
-            <select>
-                <option>Tiếng Việt</option>
-                <option>English</option>
-            </select>
-        </div>
-
-        <h1 class="login-logo">GTSC<strong>HUNDER</strong></h1>
+        <h1 class="login-logo">GTSC<strong style="color: #506891;">HUNDER</strong></h1>
 
         <div class="login-card">
             
             <div class="login-tabs">
-                <a href="login.php" class="tab-item">
-                    <i class="fa-regular fa-id-card"></i> Đăng nhập
+                <a href="login.php" class="tab-item inactive">
+                    <i class="fas fa-sign-in-alt"></i> Đăng nhập
                 </a>
-                <label readonly class="tab-item active">
-                    <i class="fa-solid fa-qrcode"></i> Đăng ký
-                </label>
+                <div class="tab-item active">
+                    <i class="fas fa-user-plus"></i> Đăng ký
+                </div>
             </div>
 
-            <div class="login-form-container">
+            <div class="login-body">
                 
                 <?php if($error): ?>
-                    <div class="error-msg"><?= $error ?></div>
+                    <div class="alert-error">
+                        <i class="fas fa-exclamation-triangle me-2"></i> <?= $error ?>
+                    </div>
                 <?php endif; ?>
 
                 <?php if($success): ?>
-                    <div class="success-msg">
-                        <?= $success ?> <br>
-                        <a href="login.php" style="color: inherit; font-weight: bold; text-decoration: underline;">Đăng nhập ngay</a>
+                    <div class="alert-success" style="background: rgba(46, 204, 113, 0.15); color: #2ecc71; padding: 10px; border: 1px solid #2ecc71; border-radius: 4px; margin-bottom: 20px; font-size: 13px; text-align: center;">
+                        <i class="fas fa-check-circle me-2"></i> <?= $success ?>
                     </div>
                 <?php else: ?>
 
                 <form method="POST">
-                    <div class="input-group reg-group">
-                        <input type="text" name="username" placeholder="Tên đăng nhập" required autocomplete="off">
-                    </div>
-                    <div class="input-group reg-group">
-                        <input type="email" name="email" placeholder="Địa chỉ Email" required autocomplete="off">
-                    </div>
-                    <div class="input-group reg-group">
-                        <input type="password" name="password" placeholder="Mật khẩu" required autocomplete="off">
-                    </div>
-                    <div class="input-group reg-group">
-                        <input type="password" name="confirm_password" placeholder="Nhập lại mật khẩu" required autocomplete="off">
+                    <div class="form-group">
+                        <label>Tên đăng nhập</label>
+                        <input type="text" name="username" class="form-input" required autocomplete="off" placeholder="VD: user123 (Viết liền không dấu)">
                     </div>
 
-                    <div style="margin-top: 20px;"></div>
+                    <div class="form-group">
+                        <label>Địa chỉ Email</label>
+                        <input type="email" name="email" class="form-input" required autocomplete="off" placeholder="VD: example@gmail.com">
+                    </div>
 
-                    <button type="submit" class="btn-signin">Đăng Ký</button>
+                    <div class="form-group">
+                        <label>Mật khẩu</label>
+                        <input type="password" name="password" class="form-input" required placeholder="Nhập mật khẩu của bạn">
+                    </div>
 
-                    <div class="login-links">
-                        <span>Đã có tài khoản?</span>
-                        <a href="login.php" style="color: var(--primary-theme); font-weight: bold;">Đăng nhập ngay</a>
+                    <div class="form-group">
+                        <label>Xác nhận mật khẩu</label>
+                        <input type="password" name="confirm_password" class="form-input" required placeholder="Nhập lại mật khẩu bên trên">
+                    </div>
+
+                    <button type="submit" class="btn-submit" style="margin-top: 10px;">Đăng ký tài khoản</button>
+                    
+                    <div class="login-footer-link" style="text-align: center; margin-top: 15px; font-size: 13px; color: #666;">
+                        Đã có tài khoản? <a href="login.php" style="color: #506891; font-weight: bold;">Đăng nhập ngay</a>
                     </div>
                 </form>
                 <?php endif; ?>
             </div>
         </div>
 
-        <footer class="login-footer">
-            <strong>GTSCHUNDER</strong> Copyright © <strong><?= date('Y') ?></strong> All Rights Reserved.
-        </footer>
-
+        <div class="footer-text">
+            <strong>GTSCHUNDER</strong> Copyright © <strong>GTSCHUNDER Corp.</strong> All Rights Reserved.
+        </div>
     </div>
 
 </body>

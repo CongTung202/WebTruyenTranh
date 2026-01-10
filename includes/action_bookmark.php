@@ -1,34 +1,61 @@
 <?php
 require_once 'db.php';
+if (session_status() === PHP_SESSION_NONE) session_start();
+
+$articleId = $_GET['id'] ?? null;
+$isAjax = isset($_GET['ajax']); // Kiểm tra xem có phải gọi từ AJAX không
 
 // 1. Kiểm tra đăng nhập
 if (!isset($_SESSION['user_id'])) {
-    // Nếu chưa đăng nhập, chuyển hướng sang trang login
-    header("Location: ../login.php");
-    exit;
-}
-
-$userId = $_SESSION['user_id'];
-$articleId = $_GET['id'] ?? null;
-
-if ($articleId) {
-    // 2. Kiểm tra xem đã lưu chưa
-    $stmtCheck = $pdo->prepare("SELECT BookmarkID FROM bookmarks WHERE UserID = ? AND ArticleID = ?");
-    $stmtCheck->execute([$userId, $articleId]);
-    $existing = $stmtCheck->fetch();
-
-    if ($existing) {
-        // 3a. Nếu ĐÃ có -> Xóa (Bỏ lưu)
-        $stmtDel = $pdo->prepare("DELETE FROM bookmarks WHERE UserID = ? AND ArticleID = ?");
-        $stmtDel->execute([$userId, $articleId]);
+    if ($isAjax) {
+        echo json_encode(['status' => 'login_required']);
+        exit;
     } else {
-        // 3b. Nếu CHƯA có -> Thêm mới (Lưu)
-        $stmtAdd = $pdo->prepare("INSERT INTO bookmarks (UserID, ArticleID) VALUES (?, ?)");
-        $stmtAdd->execute([$userId, $articleId]);
+        header("Location: ../login.php");
+        exit;
     }
 }
 
-// 4. Quay lại trang chi tiết truyện
-header("Location: ../detail.php?id=" . $articleId);
-exit;
+$userId = $_SESSION['user_id'];
+
+if ($articleId) {
+    // 2. Kiểm tra đã bookmark chưa
+    $stmtCheck = $pdo->prepare("SELECT BookmarkID FROM bookmarks WHERE UserID = ? AND ArticleID = ?");
+    $stmtCheck->execute([$userId, $articleId]);
+    $bookmark = $stmtCheck->fetch();
+
+    if ($bookmark) {
+        // Nếu ĐÃ có -> XÓA (Hủy theo dõi)
+        $pdo->prepare("DELETE FROM bookmarks WHERE BookmarkID = ?")->execute([$bookmark['BookmarkID']]);
+        $bookmarked = false;
+        $msg = "Đã hủy theo dõi.";
+    } else {
+        // Nếu CHƯA có -> THÊM (Theo dõi)
+        $pdo->prepare("INSERT INTO bookmarks (UserID, ArticleID, CreatedAt) VALUES (?, ?, NOW())")->execute([$userId, $articleId]);
+        $bookmarked = true;
+        $msg = "Đã thêm vào danh sách theo dõi.";
+    }
+
+    // 3. Phản hồi
+    if ($isAjax) {
+        // Trả về JSON cho Javascript
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'success',
+            'is_bookmarked' => $bookmarked,
+            'message' => $msg
+        ]);
+        exit;
+    } else {
+        // Chuyển hướng (Dành cho các trang cũ không dùng AJAX)
+        $redirect = $_GET['redirect'] ?? 'detail';
+        if ($redirect == 'read') {
+            $chap = $_GET['chap'] ?? '';
+            header("Location: ../read.php?id=$articleId&chap=$chap");
+        } else {
+            header("Location: ../detail.php?id=$articleId");
+        }
+        exit;
+    }
+}
 ?>
