@@ -245,7 +245,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
                Phân loại
             </a>
 
-            <a href="#" class="nav__item">Nhiều lượt xem nhất</a>
+            <a href="history.php" class="nav__item <?= basename($_SERVER['PHP_SELF']) == 'history.php' ? 'nav__item--active' : '' ?>">
+                Lịch sử đọc
+            </a>
             
             <?php if (isset($_SESSION['user_id'])): ?>
                 <a href="<?= BASE_URL ?>profile.php" 
