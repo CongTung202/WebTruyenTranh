@@ -40,7 +40,7 @@ if (!function_exists('getAvatarLink')) {
     .cmt-meta { margin-bottom: 5px; }
     .cmt-username { font-weight: bold; color: var(--text-main); margin-right: 8px; font-size: 14px; }
     .cmt-time { color: var(--text-muted); font-size: 11px; }
-    .cmt-content { font-size: 14px; color: #ccc; line-height: 1.5; }
+    .cmt-content { font-size: 14px; color: var(--text-main); line-height: 1.5; }
     
     .badge-admin { background: #ff4d4d; color: #fff; font-size: 9px; padding: 1px 4px; border-radius: 2px; margin-left: 5px; vertical-align: middle; }
     .badge-chap { background: #333; color: #aaa; border: 1px solid #555; font-size: 10px; padding: 1px 5px; border-radius: 3px; margin-left: 8px; }

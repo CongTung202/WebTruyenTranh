@@ -1,20 +1,31 @@
-/* --- RESET & VARIABLES (DARK MODE THEME) --- */
+/* --- RESET & VARIABLES (DARK MODE - DEFAULT) --- */
 :root {
-    /* MÀU CHỦ ĐẠO MỚI */
+    /* MÀU CHỦ ĐẠO */
     --primary-theme: #506891; 
     
-    /* MÀU NỀN (DARK MODE) */
-    --bg-body: #1a1a1a;       /* Đen gần đậm (không đen kịt) */
-    --bg-element: #252525;    /* Nền cho các ô input/card */
-    --bg-hover: #333333;      /* Màu khi di chuột vào */
+    /* MÀU NỀN (DARK MODE - DEFAULT) */
+    --bg-body: #1a1a1a;       /* Đen gần đậm */
+    --bg-element: #252525;    /* Nền card/input */
+    --bg-hover: #333333;      /* Hover */
     
     /* MÀU CHỮ */
     --text-main: #e0e0e0;     /* Chữ chính (trắng ngà) */
     --text-muted: #999999;    /* Chữ phụ (xám) */
-    --text-dark: #000000;     /* Dùng cho các badge nền sáng */
+    --text-dark: #000000;     /* Badge trên nền sáng */
 
-    /* VIỀN & PHÂN CÁCH */
-    --border-color: #333333;  /* Viền tối màu */
+    /* VIỀN */
+    --border-color: #333333;  /* Viền tối */
+}
+
+/* --- LIGHT MODE (Chỉ override các biến khi có class light-mode) --- */
+html.light-mode {
+    --bg-body: #f5f5f5;       /* Nền sáng */
+    --bg-element: #ffffff;    /* Nền card/input trắng */
+    --bg-hover: #f0f0f0;      /* Hover nhạt */
+    
+    --text-main: #2c2c2c;     /* Chữ tối */
+    --text-muted: #666666;    /* Chữ xám */
+    --border-color: #e0e0e0;  /* Viền nhẹ */
 }
 
 * {
@@ -149,11 +160,23 @@ button { cursor: pointer; border: none; background: none; color: var(--text-main
 .nav__btn-creator {
     margin-left: auto;
     border: 1px solid var(--primary-theme);
-    color: var(--primary-theme); /* Đổi sang style viền cho thanh thoát ở darkmode */
+    color: var(--primary-theme);
     font-weight: bold;
     padding: 4px 10px;
     border-radius: 3px;
     font-size: 11px;
+    transition: all 0.2s;
+}
+.nav__btn-creator:hover {
+    background-color: var(--primary-theme);
+    color: #fff;
+}
+.nav__btn-creator.nav__item--active {
+    background-color: var(--primary-theme);
+    color: #fff;
+    border-color: var(--primary-theme);
+    padding: 4px 10px;
+    margin-right: 0;
 }
 .nav__btn-creator .badge-dot { background-color: var(--primary-theme); }
 

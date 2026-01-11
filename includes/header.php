@@ -18,6 +18,28 @@ $current_page = basename($_SERVER['PHP_SELF']);
     
     <link rel="stylesheet" href="<?= BASE_URL ?>css/style.css?v=<?= time() ?>">
     
+    <!-- Theme Cookie Manager - Phải load trước body để tránh flashing -->
+    <script>
+        // Load theme từ cookie trước khi render page
+        const themeCookie = (function() {
+            const name = 'theme-preference=';
+            const decodedCookie = decodeURIComponent(document.cookie);
+            const cookieArray = decodedCookie.split(';');
+            for (let cookie of cookieArray) {
+                cookie = cookie.trim();
+                if (cookie.startsWith(name)) {
+                    return cookie.substring(name.length);
+                }
+            }
+            return 'dark'; // Mặc định dark
+        })();
+        
+        // Apply theme ngay khi load để tránh flashing
+        if (themeCookie === 'light') {
+            document.documentElement.classList.add('light-mode');
+        }
+    </script>
+    
     <?php if ($current_page == 'read.php'): ?>
         <link rel="stylesheet" href="<?= BASE_URL ?>css/read.css">
     <?php endif; ?>
@@ -44,10 +66,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
             position: absolute;
             right: 0; top: 100%;
             margin-top: 10px;
-            background-color: #252525; /* Nền tối */
+            background-color: var(--bg-element);
             min-width: 220px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            border: 1px solid #444;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             z-index: 1000;
             overflow: hidden;
@@ -58,21 +80,36 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
         .user-info-header {
             padding: 12px 20px;
-            border-bottom: 1px solid #444;
-            font-size: 11px; color: #999;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 11px; 
+            color: var(--text-muted);
         }
         
         .menu-link {
             display: flex; align-items: center;
             padding: 10px 20px;
-            color: #e0e0e0; text-decoration: none;
-            font-size: 13px; transition: 0.2s;
+            color: var(--text-main); 
+            text-decoration: none;
+            font-size: 13px; 
+            transition: 0.2s;
         }
-        .menu-link:hover { background-color: #333; color: #506891; }
-        .menu-link i { width: 25px; color: #777; }
-        .menu-link:hover i { color: #506891; }
+        .menu-link:hover { 
+            background-color: var(--bg-hover); 
+            color: var(--primary-theme); 
+        }
+        .menu-link i { 
+            width: 25px; 
+            color: var(--text-muted); 
+        }
+        .menu-link:hover i { 
+            color: var(--primary-theme); 
+        }
 
-        .menu-divider { height: 1px; background-color: #444; margin: 5px 0; }
+        .menu-divider { 
+            height: 1px; 
+            background-color: var(--border-color); 
+            margin: 5px 0; 
+        }
 
         /* Avatar Styles */
         .header-avatar {
@@ -175,7 +212,27 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </div>
             </div>
             
-            <div class="header__actions">
+            <div class="header__actions" style="display: flex; align-items: center; gap: 12px;">
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle-btn" 
+                        style="
+                            padding: 6px 14px;
+                            border: 1px solid var(--border-color);
+                            background-color: transparent;
+                            color: var(--text-main);
+                            border-radius: 4px;
+                            cursor: pointer;
+                            font-size: 12px;
+                            font-weight: bold;
+                            transition: all 0.2s;
+                            white-space: nowrap;
+                            font-family: 'Noto Sans', sans-serif;
+                        "
+                        onmouseover="this.style.backgroundColor='var(--bg-hover)'"
+                        onmouseout="this.style.backgroundColor='transparent'">
+                    ☀️ Light Mode
+                </button>
+
                 <?php if (isset($_SESSION['user_id'])): ?>
                     
                     <div class="user-menu-container">
@@ -252,7 +309,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <?php if (isset($_SESSION['user_id'])): ?>
                 <a href="<?= BASE_URL ?>profile" 
                    class="nav__btn-creator <?= ($current_page == 'profile.php') ? 'nav__item--active' : '' ?>" 
-                   style="text-decoration:none;color:white;">
+                   style="text-decoration:none;">
                     My Page <span class="badge-dot"></span>
                 </a>
             <?php endif; ?>
@@ -341,3 +398,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
             }
         });
     </script>
+    
+    <!-- Theme Cookie Manager -->
+    <script src="<?= BASE_URL ?>js/theme-cookie.js"></script>
+</body>
+</html>

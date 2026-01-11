@@ -3,12 +3,32 @@ require_once 'includes/db.php';
 $pageTitle = "Trang chủ - GTSCHUNDER";
 require_once 'includes/header.php'; 
 
-// 1. Lấy truyện mới cập nhật
-$stmtNew = $pdo->query("SELECT * FROM articles WHERE IsDeleted = 0 ORDER BY UpdatedAt DESC LIMIT 10");
+// 1. Lấy truyện mới cập nhật (kèm tác giả đầu tiên)
+$stmtNew = $pdo->query("
+    SELECT a.*, 
+           GROUP_CONCAT(DISTINCT auth.Name SEPARATOR ', ') as Authors 
+    FROM articles a 
+    LEFT JOIN articles_authors aa ON a.ArticleID = aa.ArticleID 
+    LEFT JOIN authors auth ON aa.AuthorID = auth.AuthorID 
+    WHERE a.IsDeleted = 0 
+    GROUP BY a.ArticleID
+    ORDER BY a.UpdatedAt DESC 
+    LIMIT 10
+");
 $articlesNew = $stmtNew->fetchAll();
 
-// 2. Lấy truyện nhiều lượt xem (Top 5)
-$stmtTop = $pdo->query("SELECT * FROM articles WHERE IsDeleted = 0 ORDER BY ViewCount DESC LIMIT 5");
+// 2. Lấy truyện nhiều lượt xem (Top 5, kèm tác giả)
+$stmtTop = $pdo->query("
+    SELECT a.*, 
+           GROUP_CONCAT(DISTINCT auth.Name SEPARATOR ', ') as Authors 
+    FROM articles a 
+    LEFT JOIN articles_authors aa ON a.ArticleID = aa.ArticleID 
+    LEFT JOIN authors auth ON aa.AuthorID = auth.AuthorID 
+    WHERE a.IsDeleted = 0 
+    GROUP BY a.ArticleID
+    ORDER BY a.ViewCount DESC 
+    LIMIT 5
+");
 $articlesTop = $stmtTop->fetchAll();
 ?>
 <div class="main-container">
@@ -32,7 +52,15 @@ $articlesTop = $stmtTop->fetchAll();
                     <span class="badge-up">UP</span>
                 </div>
                 <h4 class="card__title"><?= htmlspecialchars($art['Title']) ?></h4>
-                <p class="card__author">Tác giả...</p>
+                <p class="card__author">
+                    <?php 
+                    if (!empty($art['Authors'])) {
+                        echo htmlspecialchars(explode(', ', $art['Authors'])[0]); // Tác giả đầu tiên
+                    } else {
+                        echo 'Đang cập nhật';
+                    }
+                    ?>
+                </p>
             </article>
             <?php endforeach; ?>
         </div>

@@ -29,7 +29,16 @@ if ($currentCatId > 0) {
     $totalArticles = $stmtCount->fetchColumn();
 
     // Lấy dữ liệu (Thêm LIMIT OFFSET)
-    $stmt = $pdo->prepare("SELECT * FROM articles WHERE CategoryID = ? AND IsDeleted = 0 ORDER BY UpdatedAt DESC LIMIT $limit OFFSET $offset");
+    $stmt = $pdo->prepare("
+        SELECT a.*, 
+               GROUP_CONCAT(DISTINCT auth.Name SEPARATOR ', ') as Authors 
+        FROM articles a
+        LEFT JOIN articles_authors aa ON a.ArticleID = aa.ArticleID
+        LEFT JOIN authors auth ON aa.AuthorID = auth.AuthorID
+        WHERE a.CategoryID = ? AND a.IsDeleted = 0 
+        GROUP BY a.ArticleID
+        ORDER BY a.UpdatedAt DESC LIMIT $limit OFFSET $offset
+    ");
     $stmt->execute([$currentCatId]);
 } else {
     $pageTitle = "Tất cả phân loại";
@@ -37,7 +46,16 @@ if ($currentCatId > 0) {
     $totalArticles = $pdo->query("SELECT COUNT(*) FROM articles WHERE IsDeleted = 0")->fetchColumn();
     
     // Lấy dữ liệu
-    $stmt = $pdo->query("SELECT * FROM articles WHERE IsDeleted = 0 ORDER BY UpdatedAt DESC LIMIT $limit OFFSET $offset");
+    $stmt = $pdo->query("
+        SELECT a.*, 
+               GROUP_CONCAT(DISTINCT auth.Name SEPARATOR ', ') as Authors 
+        FROM articles a
+        LEFT JOIN articles_authors aa ON a.ArticleID = aa.ArticleID
+        LEFT JOIN authors auth ON aa.AuthorID = auth.AuthorID
+        WHERE a.IsDeleted = 0 
+        GROUP BY a.ArticleID
+        ORDER BY a.UpdatedAt DESC LIMIT $limit OFFSET $offset
+    ");
 }
 
 $articles = $stmt->fetchAll();
@@ -180,7 +198,13 @@ function renderContent($title, $list, $page, $totalPages, $baseUrl) {
                     </div>
                     <h4 class="card__title"><?= htmlspecialchars($art['Title']) ?></h4>
                     <p class="card__author" style="font-size: 11px; color: var(--text-muted);">
-                        <i class="fas fa-eye me-1"></i> <?= number_format($art['ViewCount']) ?>
+                        <?php 
+                        if (!empty($art['Authors'])) {
+                            echo htmlspecialchars(explode(', ', $art['Authors'])[0]); // Tác giả đầu tiên
+                        } else {
+                            echo 'Đang cập nhật';
+                        }
+                        ?>
                     </p>
                 </article>
                 <?php endforeach; ?>

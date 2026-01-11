@@ -62,107 +62,205 @@ require_once 'includes/header.php';
 ?>
 
 <style>
-    /* 1. Layout Căn Giữa */
+    /* 1. Layout Profile - Cân Đối & Responsive */
     .profile-container { 
         display: flex; 
-        gap: 30px; 
+        gap: 40px; 
         margin-top: 40px; 
-        margin-bottom: 40px;
-        justify-content: center; /* Căn giữa theo chiều ngang */
+        margin-bottom: 60px;
+        justify-content: center;
         align-items: flex-start; 
-        max-width: 1000px; /* Giới hạn chiều rộng để không bị bè ra */
+        max-width: 1200px;
         margin-left: auto; 
         margin-right: auto;
+        padding: 0 20px;
     }
     
-    /* Box User */
+    /* Box User - Sidebar */
     .profile-box { 
-        width: 300px; /* Cố định chiều rộng */
+        width: 280px;
         flex-shrink: 0;
         background: var(--bg-element); 
-        padding: 30px 20px; 
-        border-radius: 8px; 
+        padding: 40px 25px; 
+        border-radius: 10px; 
         text-align: center; 
-        border: 1px solid var(--border-color); 
-        position: sticky; top: 20px;
+        border: 1px solid var(--border-color);
+        position: sticky;
+        top: 100px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
     
-    /* Box Hoạt động */
+    /* Box Hoạt động - Content Area */
     .activity-box { 
-        flex: 1; /* Chiếm phần còn lại */
+        flex: 1;
+        min-width: 400px;
         background: var(--bg-element); 
-        border-radius: 8px; 
-        border: 1px solid var(--border-color); 
+        border-radius: 10px; 
+        border: 1px solid var(--border-color);
         overflow: hidden;
-        min-height: 400px;
+        min-height: 600px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
-    /* Avatar Styles */
-    .avatar-wrapper { position: relative; display: inline-block; margin-bottom: 15px; }
+    /* Avatar Styles - Cải thiện */
+    .avatar-wrapper { 
+        position: relative; 
+        display: inline-block; 
+        margin-bottom: 25px; 
+    }
     .avatar-img { 
-        width: 120px; height: 120px; 
+        width: 140px; 
+        height: 140px; 
         border-radius: 50%; 
         object-fit: cover; 
-        border: 4px solid var(--bg-body); 
-        box-shadow: 0 0 0 1px var(--border-color);
+        border: 5px solid var(--bg-body); 
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s;
     }
+    .avatar-img:hover { transform: scale(1.05); }
+    
     .btn-upload-cam {
-        position: absolute; bottom: 5px; right: 5px;
-        width: 34px; height: 34px; border-radius: 50%;
-        background: var(--bg-body); border: 1px solid var(--border-color);
-        color: var(--text-main); display: flex; align-items: center; justify-content: center;
-        cursor: pointer; transition: 0.2s; z-index: 2;
+        position: absolute;
+        bottom: 8px;
+        right: 8px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--primary-theme);
+        border: 2px solid var(--bg-element);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: 0.3s;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
-    .btn-upload-cam:hover { background: var(--primary-theme); color: #fff; border-color: var(--primary-theme); }
+    .btn-upload-cam:hover { 
+        transform: scale(1.15);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
 
-    /* Text Info */
-    .user-name { color: var(--text-main); font-weight: bold; font-size: 20px; margin-bottom: 5px; }
-    .user-email { color: var(--text-muted); font-size: 13px; margin-bottom: 10px; }
+    /* Text Info - User Details */
+    .user-name { 
+        color: var(--text-main); 
+        font-weight: bold; 
+        font-size: 22px; 
+        margin-bottom: 8px;
+        word-break: break-word;
+    }
+    .user-email { 
+        color: var(--text-muted); 
+        font-size: 12px; 
+        margin-bottom: 16px;
+        word-break: break-all;
+    }
     .user-role { 
-        display: inline-block; padding: 4px 12px; 
-        background: rgba(80, 104, 145, 0.2); color: var(--primary-theme); border: 1px solid var(--primary-theme);
-        border-radius: 20px; font-size: 11px; font-weight: bold; letter-spacing: 0.5px;
+        display: inline-block; 
+        padding: 6px 14px; 
+        background: rgba(80, 104, 145, 0.15);
+        color: var(--primary-theme);
+        border: 1.5px solid var(--primary-theme);
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+        margin-top: 8px;
     }
 
-    /* Activity List */
+    /* Activity List - Bình luận */
     .activity-header { 
-        padding: 15px 25px; 
-        border-bottom: 1px solid var(--border-color); 
-        font-weight: bold; color: var(--text-main); font-size: 16px;
-        background: rgba(255,255,255,0.02);
-    }
-    .activity-item { 
         padding: 20px 25px; 
-        border-bottom: 1px solid var(--border-color); 
-        display: flex; justify-content: space-between; 
-        transition: 0.2s;
+        border-bottom: 2px solid var(--border-color);
+        font-weight: bold;
+        color: var(--text-main);
+        font-size: 17px;
+        background: rgba(255, 255, 255, 0.02);
+    }
+    
+    .activity-item { 
+        padding: 22px 25px; 
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        transition: background 0.2s;
     }
     .activity-item:last-child { border-bottom: none; }
-    .activity-item:hover { background: var(--bg-hover); }
-
-    .act-link { color: var(--primary-theme); font-weight: bold; font-size: 14px; text-decoration: none; }
-    .act-link:hover { text-decoration: underline; }
-    .act-content { color: #ccc; font-size: 13px; margin-top: 6px; line-height: 1.5; }
-    .act-time { color: var(--text-muted); font-size: 11px; margin-top: 8px; display: block; }
-
-    /* Nút xóa AJAX */
-    .btn-del-cmt { 
-        color: #ff4d4d; font-size: 12px; padding: 5px 10px; border-radius: 4px;
-        border: 1px solid transparent; background: transparent; cursor: pointer;
+    .activity-item:hover { 
+        background: var(--bg-hover);
     }
-    .btn-del-cmt:hover { background: rgba(255, 77, 77, 0.1); border-color: #ff4d4d; }
 
-    /* --- TOAST NOTIFICATION (Thông báo nổi) --- */
+    .act-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+    }
+
+    .act-link { 
+        color: var(--primary-theme); 
+        font-weight: bold; 
+        font-size: 14px; 
+        text-decoration: none;
+        flex: 1;
+    }
+    .act-link:hover { 
+        text-decoration: underline; 
+    }
+    .act-content { 
+        color: var(--text-main); 
+        font-size: 13px; 
+        margin-top: 8px; 
+        line-height: 1.6;
+        word-break: break-word;
+    }
+    .act-time { 
+        color: var(--text-muted); 
+        font-size: 11px; 
+        margin-top: 10px; 
+        display: block; 
+    }
+
+    /* Nút xóa AJAX - Bên phải */
+    .btn-del-cmt { 
+        color: #ff4d4d;
+        font-size: 11px;
+        padding: 6px 12px;
+        border-radius: 4px;
+        border: 1px solid transparent;
+        background: transparent;
+        cursor: pointer;
+        transition: 0.2s;
+        white-space: nowrap;
+        margin-left: auto;
+        flex-shrink: 0;
+    }
+    .btn-del-cmt:hover { 
+        background: rgba(255, 77, 77, 0.15);
+        border-color: #ff4d4d;
+    }
+
+    /* --- TOAST NOTIFICATION --- */
     .toast-container {
-        position: fixed; top: 20px; right: 20px; z-index: 9999;
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        z-index: 9999;
     }
     .custom-toast {
-        background: var(--bg-element); color: var(--text-main);
-        padding: 15px 20px; border-radius: 6px; border-left: 4px solid var(--primary-theme);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        display: flex; align-items: center; gap: 10px;
-        transform: translateX(120%); transition: transform 0.3s ease;
-        margin-bottom: 10px; min-width: 300px;
+        background: var(--bg-element);
+        color: var(--text-main);
+        padding: 15px 20px;
+        border-radius: 6px;
+        border-left: 4px solid var(--primary-theme);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transform: translateX(120%);
+        transition: transform 0.3s ease;
+        margin-bottom: 10px;
+        min-width: 300px;
     }
     .custom-toast.show { transform: translateX(0); }
     .custom-toast.success { border-left-color: #2ecc71; }
@@ -170,10 +268,39 @@ require_once 'includes/header.php';
     .custom-toast i { font-size: 18px; }
 
     /* Responsive */
-    @media (max-width: 900px) {
-        .profile-container { flex-direction: column; align-items: center; }
-        .profile-box { width: 100%; max-width: 400px; position: static; }
-        .activity-box { width: 100%; max-width: 800px; }
+    @media (max-width: 1024px) {
+        .profile-container {
+            gap: 30px;
+        }
+        .profile-box {
+            width: 260px;
+        }
+        .activity-box {
+            min-width: auto;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .profile-container { 
+            flex-direction: column;
+            gap: 30px;
+            padding: 0 15px;
+        }
+        .profile-box { 
+            width: 100%;
+            max-width: none;
+            position: static;
+            padding: 30px 20px;
+        }
+        .activity-box { 
+            width: 100%;
+            min-width: auto;
+            min-height: auto;
+        }
+        .btn-del-cmt {
+            margin-left: 0;
+            margin-top: 10px;
+        }
     }
 </style>
 
@@ -209,22 +336,16 @@ require_once 'includes/header.php';
                 <?php if (count($myComments) > 0): ?>
                     <?php foreach ($myComments as $cmt): ?>
                         <div class="activity-item" id="cmt-row-<?= $cmt['CommentID'] ?>">
-                            <div style="flex: 1; padding-right: 15px;">
-                                <div style="margin-bottom: 4px;">
-                                    <span style="font-size: 12px; color: var(--text-muted);">Tại truyện: </span>
-                                    <a href="<?= BASE_URL ?>truyen/<?= $cmt['ArticleID'] ?>" class="act-link">
-                                        <?= htmlspecialchars($cmt['ArticleTitle']) ?>
-                                    </a>
-                                </div>
-                                <div class="act-content"><?= nl2br(htmlspecialchars($cmt['Content'])) ?></div>
-                                <span class="act-time"><?= date('d/m/Y H:i', strtotime($cmt['CreatedAt'])) ?></span>
-                            </div>
-                            
-                            <div>
-                                <button class="btn-del-cmt" onclick="deleteComment(<?= $cmt['CommentID'] ?>)">
+                            <div class="act-header">
+                                <a href="<?= BASE_URL ?>truyen/<?= $cmt['ArticleID'] ?>" class="act-link">
+                                    <?= htmlspecialchars($cmt['ArticleTitle']) ?>
+                                </a>
+                                <button class="btn-del-cmt" onclick="deleteComment(<?= $cmt['CommentID'] ?>)" title="Xóa bình luận">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </div>
+                            <div class="act-content"><?= nl2br(htmlspecialchars($cmt['Content'])) ?></div>
+                            <span class="act-time"><?= date('d/m/Y H:i', strtotime($cmt['CreatedAt'])) ?></span>
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
