@@ -33,12 +33,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt = $pdo->prepare($sql);
             $stmt->execute([$userId, $articleId, $content]);
         }
+        // Trả về 'success' cho AJAX
+        echo 'success';
     } catch (Exception $e) {
-        // Ghi log lỗi nếu cần
+        // Trả về lỗi cho AJAX
+        echo 'Lỗi: ' . $e->getMessage();
     }
-
-    // 4. Quay lại trang cũ
-    header("Location: " . $redirectUrl);
     exit;
 }
 ?>

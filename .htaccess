@@ -7,11 +7,14 @@ RewriteEngine On
 # ========================================
 # 1. CHẶN TRUY CẬP TRỰC TIẾP
 # ========================================
-# Chặn truy cập vào thư mục includes (chứa các file cấu hình)
-RewriteRule ^includes/ - [F,L]
-
 # Cho phép tải file từ thư mục uploads (ảnh, video)
 RewriteRule ^uploads/ - [L]
+
+# Cho phép POST đến includes/post_comment.php (form bình luận)
+RewriteRule ^includes/post_comment\.php$ - [L]
+
+# Chặn truy cập vào thư mục includes (chứa các file cấu hình)
+RewriteRule ^includes/ - [F,L]
 
 # ========================================
 # 2. XÓA ĐU ÔILE .PHP
@@ -34,12 +37,12 @@ RewriteRule ^truyen/([0-9]+)/?$ detail.php?id=$1 [L,QSA]
 # Trang đọc truyện (Chương)
 # Định dạng: /doc/{ArticleID}/{ChapterNumber}
 # Ví dụ: domain.com/doc/1/5 -> read.php?id=1&chap=5
-RewriteRule ^doc/([0-9]+)/([0-9]+)/?$ read.php?id=$1&chap=$2 [L,QSA]
+RewriteRule ^chapter/([0-9]+)/([0-9]+)/?$ read.php?id=$1&chap=$2 [L,QSA]
 
 # Trang danh sách truyện theo thể loại
 # Định dạng: /the-loai/{GenreID}
 # Ví dụ: domain.com/the-loai/1 -> genres.php?genre_id=1
-RewriteRule ^the-loai/([0-9]+)/?$ genres.php?genre_id=$1 [L,QSA]
+RewriteRule ^genre/([0-9]+)/?$ genres.php?genre_id=$1 [L,QSA]
 
 # ========================================
 # 4. COMPRESSION & PERFORMANCE

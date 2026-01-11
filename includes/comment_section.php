@@ -31,7 +31,9 @@ if (!function_exists('getAvatarLink')) {
     .cmt-form-wrapper { background-color: var(--bg-body); padding: 15px; border-radius: 4px; border: 1px solid var(--border-color); margin-bottom: 30px; }
     .cmt-input { width: 100%; background: transparent; border: none; resize: none; color: var(--text-main); font-size: 14px; outline: none; min-height: 60px; }
     .cmt-submit-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 10px; }
-    .btn-cmt-post { background-color: var(--primary-theme); color: #fff; border: none; padding: 6px 20px; font-size: 13px; font-weight: bold; border-radius: 3px; }
+    .btn-cmt-post { background-color: var(--primary-theme); color: #fff; border: none; padding: 6px 20px; font-size: 13px; font-weight: bold; border-radius: 3px; cursor: pointer; transition: 0.2s; }
+    .btn-cmt-post:hover:not(:disabled) { opacity: 0.9; }
+    .btn-cmt-post:disabled { opacity: 0.6; cursor: not-allowed; }
     
     .cmt-list { list-style: none; padding: 0; margin: 0; }
     .cmt-item { display: flex; padding: 15px 0; border-bottom: 1px solid var(--border-color); }
@@ -51,9 +53,8 @@ if (!function_exists('getAvatarLink')) {
     
     <?php if (isset($_SESSION['user_id'])): ?>
         <div class="cmt-form-wrapper">
-            <form action="includes/post_comment.php" method="POST">
+            <form id="comment-form" class="comment-form">
                 <input type="hidden" name="article_id" value="<?= $id ?>">
-                <input type="hidden" name="redirect_url" value="<?= $currentUrl ?>">
                 
                 <?php if ($filterChapterId): ?>
                     <input type="hidden" name="chapter_id" value="<?= $filterChapterId ?>">
@@ -70,10 +71,51 @@ if (!function_exists('getAvatarLink')) {
                         <img src="<?= $myAvatarUrl ?>" class="current-user-avatar">
                         <span style="color: var(--text-main); font-weight: bold; font-size: 13px;"><?= htmlspecialchars($_SESSION['username']) ?></span>
                     </div>
-                    <button type="submit" class="btn-cmt-post">Đăng</button>
+                    <button type="submit" class="btn-cmt-post" id="btn-submit-cmt">Đăng</button>
                 </div>
             </form>
         </div>
+
+        <script>
+            document.getElementById('comment-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const btn = document.getElementById('btn-submit-cmt');
+                const originalText = btn.textContent;
+                btn.disabled = true;
+                btn.textContent = 'Đang gửi...';
+                
+                const formData = new FormData(this);
+                
+                fetch('<?= BASE_URL ?>includes/post_comment.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(data => {
+                    if (data.trim() === 'success') {
+                        // Clear textarea
+                        document.querySelector('.cmt-input').value = '';
+                        btn.textContent = 'Đăng';
+                        btn.disabled = false;
+                        
+                        // Reload comments (refresh page sau 1s để hiện bình luận mới)
+                        setTimeout(() => {
+                            location.reload();
+                        }, 500);
+                    } else {
+                        alert('Lỗi: ' + data);
+                        btn.textContent = originalText;
+                        btn.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    alert('Lỗi kết nối: ' + error);
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                });
+            });
+        </script>
     <?php else: ?>
         <div style="background-color: var(--bg-body); padding: 20px; text-align: center; border-radius: 4px; border: 1px solid var(--border-color); margin-bottom: 30px;">
             <span style="color: var(--text-muted);">Vui lòng</span> 

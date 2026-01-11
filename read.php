@@ -157,7 +157,7 @@ require_once 'includes/header.php';
         </a>
         <span class="divider">|</span>
         
-        <a href="<?= $nextChap ? BASE_URL . 'doc/' . $articleId . '/' . $nextChap['ChapterID'] : '#' ?>" 
+        <a href="<?= $nextChap ? BASE_URL . 'chapter/' . $articleId . '/' . $nextChap['ChapterID'] : '#' ?>" 
            class="btn-toolbar nav-arrow <?= !$nextChap ? 'disabled' : '' ?>">
             Sau <i class="fa-solid fa-caret-right ms-1"></i>
         </a>
@@ -182,7 +182,7 @@ require_once 'includes/header.php';
         <p style="margin-bottom: 20px; color: var(--text-muted);">Hết Chapter <?= $chapter['Index'] ?></p>
         
         <div style="display: flex; justify-content: center; gap: 15px;">
-            <a href="<?= $prevChap ? BASE_URL . 'doc/' . $articleId . '/' . $prevChap['ChapterID'] : '#' ?>" 
+            <a href="<?= $prevChap ? BASE_URL . 'chapter/' . $articleId . '/' . $prevChap['ChapterID'] : '#' ?>" 
                class="btn-nav-round <?= !$prevChap ? 'disabled' : '' ?>" 
                style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; color: var(--text-main);">
                <i class="fa-solid fa-chevron-left"></i>
@@ -193,7 +193,7 @@ require_once 'includes/header.php';
                Danh sách
             </a>
 
-            <a href="<?= $nextChap ? BASE_URL . 'doc/' . $articleId . '/' . $nextChap['ChapterID'] : '#' ?>" 
+            <a href="<?= $nextChap ? BASE_URL . 'chapter/' . $articleId . '/' . $nextChap['ChapterID'] : '#' ?>" 
                class="btn-nav-round <?= !$nextChap ? 'disabled' : '' ?>" 
                style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; color: var(--text-main);">
                <i class="fa-solid fa-chevron-right"></i>

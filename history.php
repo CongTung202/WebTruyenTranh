@@ -115,7 +115,7 @@ require_once 'includes/header.php';
             <div class="history-list">
                 <?php foreach($historyData as $item): ?>
                     <div class="history-item">
-                        <a href="<?= BASE_URL ?>doc/<?= $item['id'] ?>/<?= $item['chap_id'] ?>" class="h-thumb">
+                        <a href="<?= BASE_URL ?>chapter/<?= $item['id'] ?>/<?= $item['chap_id'] ?>" class="h-thumb">
                             <?php if(!empty($item['image'])): ?>
                                 <img src="<?= getImageUrl($item['image']) ?>" alt="<?= htmlspecialchars($item['title']) ?>">
                             <?php else: ?>
@@ -124,7 +124,7 @@ require_once 'includes/header.php';
                         </a>
                         
                         <div class="h-info">
-                            <a href="<?= BASE_URL ?>doc/<?= $item['id'] ?>/<?= $item['chap_id'] ?>" class="h-title">
+                            <a href="<?= BASE_URL ?>chapter/<?= $item['id'] ?>/<?= $item['chap_id'] ?>" class="h-title">
                                 <?= htmlspecialchars($item['title']) ?>
                             </a>
                             
@@ -144,7 +144,7 @@ require_once 'includes/header.php';
                             </div>
 
                             <div class="h-actions">
-                                <a href="<?= BASE_URL ?>doc/<?= $item['id'] ?>/<?= $item['chap_id'] ?>">Đọc tiếp</a>
+                                <a href="<?= BASE_URL ?>chapter/<?= $item['id'] ?>/<?= $item['chap_id'] ?>">Đọc tiếp</a>
                                 <a href="<?= BASE_URL ?>truyen/<?= $item['id'] ?>">Chi tiết</a>
                             </div>
                         </div>

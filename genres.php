@@ -108,12 +108,12 @@ require_once 'includes/header.php';
             </div>
 
             <div class="genre-nav">
-                <a href="<?= BASE_URL ?>the-loai/0" class="btn-genre ajax-genre <?= $currentGenreId == 0 ? 'active' : '' ?>" data-url="<?= BASE_URL ?>genres?genre_id=0">
+                <a href="<?= BASE_URL ?>genre/0" class="btn-genre ajax-genre <?= $currentGenreId == 0 ? 'active' : '' ?>" data-url="<?= BASE_URL ?>genres?genre_id=0">
                     Tất cả
                 </a>
                 
                 <?php foreach($allGenres as $g): ?>
-                    <a href="<?= BASE_URL ?>the-loai/<?= $g['GenreID'] ?>" 
+                    <a href="<?= BASE_URL ?>genre/<?= $g['GenreID'] ?>" 
                        class="btn-genre ajax-genre <?= $currentGenreId == $g['GenreID'] ? 'active' : '' ?>"
                        data-url="<?= BASE_URL ?>genres?genre_id=<?= $g['GenreID'] ?>">
                         <?= htmlspecialchars($g['Name']) ?>
