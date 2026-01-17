@@ -49,13 +49,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 <body>
 
-    <div class="lang-dropdown">
-        English <i class="fas fa-chevron-down ms-1"></i>
-    </div>
-
     <div class="login-wrapper">
         
-        <h1 class="login-logo">GTSC<strong style="color: #506891;">HUNDER</strong></h1>
+        <h1 class="login-logo">GTSCHUNDER</h1>
 
         <div class="login-card">
             
@@ -78,19 +74,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 <form method="POST">
                     <div class="form-group">
-                        <label>Gmail hoặc tên đăng nhập</label>
-                        <input type="text" name="login_input" class="form-input" required autocomplete="off">
+                        <div class="input-wrapper">
+                            <input type="text" name="login_input" class="form-input" required autocomplete="off" id="login_input" placeholder=" ">
+                            <label for="login_input" class="floating-label">Gmail hoặc tên đăng nhập</label>
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label>Mật khẩu</label>
-                        <input type="password" name="password" class="form-input" required>
+                        <div class="input-wrapper">
+                            <input type="password" name="password" class="form-input" required id="password" placeholder=" ">
+                            <label for="password" class="floating-label">Mật khẩu</label>
+                        </div>
                     </div>
 
                     <div class="form-options">
                         <label class="custom-checkbox">
-                            <input type="checkbox" checked>
-                            <span class="checkmark"></span>
+                            <input type="checkbox">
+                            <span class="checkmark">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                    <path d="M5 13l4 4L19 7" />
+                                </svg>
+                            </span>
                             Lưu tài khoản
                         </label>
                     </div>

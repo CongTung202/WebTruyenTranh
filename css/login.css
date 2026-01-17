@@ -1,9 +1,34 @@
 /* --- RESET --- */
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans', sans-serif; }
+
+:root {
+    --primary-theme: #506891; 
+    --bg-body: #0f0f0f;
+    --bg-element: #1e1e1e;
+    --bg-hover: #404040;
+    --bg-tabs: #2a2a2a;
+    --bg-button-hover: #5a82b8;
+    --text-main: #f0f0f0;
+    --text-muted: #aaaaaa;
+    --text-dark: #000000;
+    --border-color: #444444;
+    --color-logo: #003cac;
+    --bg-error: rgba(255, 77, 77, 0.1);
+    --text-error: #ff4d4d;
+    --border-error: #ff4d4d;
+    --shadow: rgba(0, 0, 0, 0.7);
+    --white: white;
+}
+
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+    font-family: 'Noto Sans', sans-serif; 
+}
 
 body {
-    background-color: #0f0f0f; /* Nền đen tối như hình */
-    color: #e0e0e0;
+    background-color: var(--bg-body);
+    color: var(--text-main);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -11,169 +36,288 @@ body {
     position: relative;
 }
 
-/* --- NGÔN NGỮ (Góc phải) --- */
+/* --- NGÔN NGỮ --- */
 .lang-dropdown {
     position: absolute;
     top: 20px;
     right: 30px;
-    background: #1e1e1e;
+    background: var(--bg-element);
     padding: 8px 15px;
-    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
     font-size: 13px;
-    color: #888;
+    color: var(--text-muted);
     cursor: pointer;
-    border: 1px solid #333;
 }
 
 /* --- LOGO --- */
 .login-wrapper {
     width: 100%;
-    max-width: 400px;
+    max-width: 600px;
     text-align: center;
-    padding: 20px;
+    padding: 40px;
+    zoom: 1.25;
 }
 
 .login-logo {
-    font-size: 32px;
+    font-size: 40px;
     font-weight: 900;
-    color: #3b4d6e; /* Màu xanh xám đậm của logo trong hình */
-    margin-bottom: 25px;
+    margin-bottom: 35px;
     letter-spacing: 1px;
+    
+    /* Cấu hình Gradient */
+    /* 90deg: Màu chạy ngang. Thêm màu lặp lại để khi animation chạy hết vòng sẽ mượt */
+    background: linear-gradient(90deg, #506891, #003cac, #506891);
+    background-size: 200% auto; /* Kéo dài background để có thể di chuyển */
+    
+    /* Cắt background theo hình dáng chữ */
+    -webkit-background-clip: text;
+    background-clip: text;
+    
+    /* Làm chữ trong suốt để hiện background */
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    
+    /* Hiệu ứng chuyển động liên tục */
+    animation: gradientMove 1s linear infinite;
+}
+
+@keyframes gradientMove {
+    0% {
+        background-position: 0% center;
+    }
+    100% {
+        background-position: 200% center;
+    }
 }
 
 /* --- CARD --- */
 .login-card {
-    background-color: #1a1a1a; /* Nền card xám đen */
-    border-radius: 8px;
-    border: 1px solid #2a2a2a;
+    background-color: var(--bg-body);
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
 /* --- TABS --- */
 .login-tabs {
     display: flex;
-    background-color: #151515;
-    border-bottom: 1px solid #2a2a2a;
+    background-color: var(--bg-tabs);
 }
+
 .tab-item {
     flex: 1;
-    padding: 15px 0;
+    padding: 20px 0;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    color: #666;
+    color: var(--text-muted);
     transition: 0.3s;
     text-decoration: none;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 8px;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-bottom: 1px solid var(--border-color);
 }
+
 .tab-item.active {
-    color: #506891; /* Màu xanh active */
-    background-color: #1a1a1a; /* Trùng màu nền card */
-    border-top: 2px solid #506891;
-}
-.tab-item.inactive:hover {
-    background-color: #1e1e1e;
-    color: #aaa;
+    color: var(--primary-theme);
+    background-color: var(--bg-body);
+    border: 1px solid var(--border-color);
+    border-bottom: none;
 }
 
 /* --- FORM BODY --- */
 .login-body {
-    padding: 30px 25px 40px; /* Padding rộng như hình */
+    padding: 50px 35px 60px;
+    border: 1px solid var(--border-color);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
 }
 
 .form-group {
-    margin-bottom: 20px;
     text-align: left;
 }
+
 .form-group label {
     display: block;
     font-size: 12px;
-    color: #666;
+    color: var(--text-muted);
     margin-bottom: 8px;
     font-weight: 600;
 }
 
-.form-input {
-    width: 100%;
-    padding: 12px 15px;
-    background-color: #121212; /* Input nền rất tối */
-    border: 1px solid #333;
-    border-radius: 4px;
-    color: #fff;
-    font-size: 14px;
-    transition: 0.2s;
-}
-.form-input:focus {
-    border-color: #506891;
-    outline: none;
-    background-color: #0f0f0f;
+/* --- FLOATING LABEL --- */
+.input-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
+.floating-label {
+    position: absolute;
+    top: 20px; /* Căn chỉnh lại vị trí mặc định cho cân giữa */
+    left: 20px;
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 400;
+    transition: all 0.2s ease-in-out;
+    pointer-events: none;
+    
+    /* Ban đầu để nền trong suốt để hòa vào input */
+    background-color: transparent; 
+    padding: 0 5px;
+    z-index: 2;
+}
+
+/* Khi input được Focus hoặc Đã có dữ liệu (kể cả khi user tự gõ hoặc trình duyệt điền tự động) */
+.form-input:focus ~ .floating-label,
+.form-input:not(:placeholder-shown) ~ .floating-label {
+    top: -8px; /* Nhảy lên trên border */
+    left: 15px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--primary-theme);
+    
+    /* Lúc này mới cần màu nền trùng với màu body để che đi đường kẻ border nằm dưới */
+    background-color: var(--bg-body); 
+}
+
+/* --- FORM INPUT --- */
+.form-input {
+    width: 100%;
+    padding: 18px 20px;
+    background-color: var(--bg-body);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+#login_input {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+#password {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+#register_password {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+#username {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;   
+}
+
+#confirm_password {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.form-input:focus {
+    border: 2px solid var(--primary-theme);
+    outline: none;
+    z-index: 1;
+}
+
+.btn-submit {
+    margin-top: 20px;
+}
 /* --- CHECKBOX --- */
 .form-options {
     display: flex;
     align-items: center;
-    margin-bottom: 25px;
+    margin-top: 25px;
 }
+
 .custom-checkbox {
     display: flex;
     align-items: center;
     cursor: pointer;
     font-size: 13px;
-    color: #888;
+    color: var(--text-muted);
     user-select: none;
 }
+
 .custom-checkbox input {
     display: none;
 }
+
+
+
 .checkmark {
     width: 18px;
     height: 18px;
-    border: 2px solid #444;
-    border-radius: 50%; /* Tròn như hình */
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
     margin-right: 8px;
-    display: inline-block;
     position: relative;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
+.checkmark svg {
+    width: 12px;
+    height: 12px;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
 .custom-checkbox input:checked ~ .checkmark {
-    border-color: #506891;
-    background-color: #506891;
+    border-color: var(--primary-theme);
+    background-color: var(--primary-theme);
+}
+
+.custom-checkbox input:checked ~ .checkmark svg {
+    opacity: 1;
 }
 
 /* --- BUTTON --- */
 .btn-submit {
     width: 100%;
-    padding: 12px;
-    background-color: #4a6fa5; /* Màu xanh của nút trong hình */
-    color: white;
+    padding: 18px;
+    background-color: var(--primary-theme);
+    color: var(--white);
     font-size: 15px;
     font-weight: bold;
-    border-radius: 4px;
-    transition: 0.3s;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
 }
+
 .btn-submit:hover {
-    background-color: #5a82b8;
-    transform: translateY(-1px);
+    background-color: var(--bg-button-hover);
+    transform: scale(1.01);
 }
 
 /* --- ERROR & FOOTER --- */
 .alert-error {
-    background: rgba(255, 77, 77, 0.1);
-    color: #ff4d4d;
+    background: var(--bg-error);
+    color: var(--text-error);
     padding: 10px;
+    border: 1px solid var(--border-error);
     border-radius: 4px;
     margin-bottom: 20px;
     font-size: 13px;
-    border: 1px solid #ff4d4d;
 }
 
 .footer-text {
     margin-top: 40px;
     font-size: 11px;
-    color: #555;
+    color: var(--text-muted);
 }
-.footer-text strong { color: #888; }
+
+.footer-text strong { 
+    color: var(--primary-theme); 
+}

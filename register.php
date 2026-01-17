@@ -7,7 +7,9 @@ $success = '';
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = trim($_POST['username']);
     $email = trim($_POST['email']);
-    $password = $_POST['password'];
+    
+    // [ĐÃ SỬA] Đổi key nhận dữ liệu thành register_password để khớp với form HTML
+    $password = $_POST['register_password']; 
     $confirm_password = $_POST['confirm_password'];
 
     // 1. Validate cơ bản
@@ -22,14 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $error = "Tên đăng nhập hoặc Email đã được sử dụng.";
         } else {
             // [THAY ĐỔI Ở ĐÂY] Đặt ảnh mặc định
-            // Lưu ý: Bạn cần upload file 'defaultavatar.png' lên thư mục gốc (public_html)
             $defaultAvatar = 'default/defaultavatar.png'; 
 
-            // 3. Thêm vào DB (Thêm cột Avatar vào câu lệnh INSERT)
+            // 3. Thêm vào DB
             $sql = "INSERT INTO users (UserName, Email, Password, Role, Avatar) VALUES (?, ?, ?, 0, ?)";
             $stmtInsert = $pdo->prepare($sql);
             
-            // Truyền thêm biến $defaultAvatar vào mảng execute
             if ($stmtInsert->execute([$username, $email, $password, $defaultAvatar])) {
                 $success = "Đăng ký thành công! Đang chuyển hướng...";
                 echo "<script>setTimeout(function(){ window.location.href = 'login.php'; }, 2000);</script>";
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <div class="login-wrapper">
         
-        <h1 class="login-logo">GTSC<strong style="color: #506891;">HUNDER</strong></h1>
+        <h1 class="login-logo">GTSC<strong>HUNDER</strong></h1>
 
         <div class="login-card">
             
@@ -88,29 +88,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 <form method="POST">
                     <div class="form-group">
-                        <label>Tên đăng nhập</label>
-                        <input type="text" name="username" class="form-input" required autocomplete="off" placeholder="VD: user123 (Viết liền không dấu)">
+                        <div class="input-wrapper">
+                            <input type="text" name="username" class="form-input" required autocomplete="off" id="username" placeholder=" ">
+                            <label for="username" class="floating-label">Tên đăng nhập</label>
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label>Địa chỉ Email</label>
-                        <input type="email" name="email" class="form-input" required autocomplete="off" placeholder="VD: example@gmail.com">
+                        <div class="input-wrapper">
+                            <input type="email" name="email" class="form-input" required autocomplete="off" id="email" placeholder=" ">
+                            <label for="email" class="floating-label">Địa chỉ Email</label>
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label>Mật khẩu</label>
-                        <input type="password" name="password" class="form-input" required placeholder="Nhập mật khẩu của bạn">
+                        <div class="input-wrapper">
+                            <input type="password" name="register_password" class="form-input" required id="register_password" placeholder=" ">
+                            <label for="register_password" class="floating-label">Mật khẩu</label>
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label>Xác nhận mật khẩu</label>
-                        <input type="password" name="confirm_password" class="form-input" required placeholder="Nhập lại mật khẩu bên trên">
+                        <div class="input-wrapper">
+                            <input type="password" name="confirm_password" class="form-input" required id="confirm_password" placeholder=" ">
+                            <label for="confirm_password" class="floating-label">Xác nhận mật khẩu</label>
+                        </div>
                     </div>
 
-                    <button type="submit" class="btn-submit" style="margin-top: 10px;">Đăng ký tài khoản</button>
+                    <button type="submit" class="btn-submit">Đăng ký tài khoản</button>
                     
-                    <div class="login-footer-link" style="text-align: center; margin-top: 15px; font-size: 13px; color: #666;">
-                        Đã có tài khoản? <a href="login.php" style="color: #506891; font-weight: bold;">Đăng nhập ngay</a>
+                    <div class="login-footer-link" style="text-align: center; margin-top: 15px; font-size: 13px; color: var(--text-muted);">
+                        Đã có tài khoản? <a href="login.php" style="color: var(--primary-theme); font-weight: bold;">Đăng nhập ngay</a>
                     </div>
                 </form>
                 <?php endif; ?>
