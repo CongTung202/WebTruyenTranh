@@ -222,17 +222,6 @@
     gap: 10px;
 }
 
-.star-rate {
-    color: #e74c3c; /* Màu đỏ nhạt cho sao giống ảnh */
-    display: flex;
-    align-items: center;
-    gap: 3px;
-}
-
-.star-rate i {
-    font-size: 10px;
-}
-
 /* --- HIỆU ỨNG ZOOM ẢNH BÌA (MODAL) --- */
 
 /* 1. Chỉnh sửa lại .detail-thumb để có con trỏ và icon kính lúp */
@@ -332,4 +321,52 @@
 @keyframes zoomIn {
     from { transform: scale(0.8); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
+}
+
+/* --- HEADER DANH SÁCH CHƯƠNG (SORT) --- */
+.list-header-row {
+    display: flex;
+    justify-content: space-between; /* Đẩy 2 bên ra xa nhau */
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color); /* Đường kẻ dưới tiêu đề */
+    margin-bottom: 0; /* List chương sẽ dính liền vào dưới */
+}
+
+/* Bên trái: Tổng số tập */
+.list-total {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--text-main);
+}
+
+/* Bên phải: Nút lọc */
+.list-sort {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.list-sort a {
+    text-decoration: none;
+    color: var(--text-muted); /* Màu xám khi chưa chọn */
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.list-sort a:hover {
+    color: var(--text-main);
+}
+
+/* Trạng thái đang chọn (Active) */
+.list-sort a.active {
+    color: var(--text-main); /* Màu sáng/đen đậm */
+    font-weight: bold;
+}
+
+/* Dấu gạch đứng ngăn cách */
+.list-sort .sep {
+    margin: 0 8px;
+    color: #444; /* Màu gạch nhạt */
+    font-size: 11px;
+    vertical-align: middle;
 }

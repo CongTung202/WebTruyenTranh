@@ -4,6 +4,29 @@ require_once 'includes/functions.php';
 
 // 1. Lấy ID
 $id = $_GET['id'] ?? null;
+$sortParam = $_GET['sort'] ?? 'desc'; // Mặc định là mới nhất
+$sortOrder = ($sortParam === 'asc') ? 'ASC' : 'DESC';
+// [HÀM MỚI] Giúp tạo link giữ nguyên các tham số khác (như id, slug...) và chỉ thay đổi sort
+function makeSortUrl($sortValue) {
+    $params = $_GET; // Lấy tất cả tham số hiện tại trên URL
+    $params['sort'] = $sortValue; // Gán tham số sort mới
+    return '?' . http_build_query($params); // Trả về chuỗi query (ví dụ: ?id=10&sort=asc)
+}
+
+// ... Code query database ...
+// Query SQL
+$sqlChap = "SELECT c.*, 
+            (SELECT ImageURL FROM chapter_images ci 
+             WHERE ci.ChapterID = c.ChapterID 
+             ORDER BY ci.ImageID ASC LIMIT 1) as ChapterThumb 
+            FROM chapters c 
+            WHERE c.ArticleID = ? AND c.IsDeleted = 0 
+            ORDER BY c.`Index` $sortOrder"; // Nhớ biến $sortOrder ở đây
+
+$stmtChap = $pdo->prepare($sqlChap);
+$stmtChap->execute([$id]);
+$chapters = $stmtChap->fetchAll();
+
 if (!$id) die("Không tìm thấy truyện.");
 
 // --- [LOGIC] KIỂM TRA SESSION ĐỂ TRÁNH SPAM VIEW ---
@@ -30,15 +53,19 @@ $article = $stmt->fetch();
 
 if (!$article) die("Truyện không tồn tại.");
 
-// 3. Lấy Chapter (ĐÃ SỬA)
-// Lưu ý: Bạn cần thay 'chapter_images' và 'ImageURL' đúng với tên bảng/cột trong database của bạn
+// 3. Lấy Chapter (CÓ SẮP XẾP)
+// Lấy tham số sort từ URL, mặc định là 'desc' (Mới nhất)
+$sortParam = $_GET['sort'] ?? 'desc';
+$sortOrder = ($sortParam === 'asc') ? 'ASC' : 'DESC';
+
+// Query SQL đã sửa để nhận biến $sortOrder
 $sqlChap = "SELECT c.*, 
             (SELECT ImageURL FROM chapter_images ci 
              WHERE ci.ChapterID = c.ChapterID 
              ORDER BY ci.ImageID ASC LIMIT 1) as ChapterThumb 
             FROM chapters c 
             WHERE c.ArticleID = ? AND c.IsDeleted = 0 
-            ORDER BY c.`Index` DESC";
+            ORDER BY c.`Index` $sortOrder"; // <-- Thay đổi chỗ này
 
 $stmtChap = $pdo->prepare($sqlChap);
 $stmtChap->execute([$id]);
@@ -51,6 +78,7 @@ if (isset($_SESSION['user_id'])) {
     $stmtCheck->execute([$_SESSION['user_id'], $id]);
     if ($stmtCheck->rowCount() > 0) $isBookmarked = true;
 }
+
 
 $pageTitle = htmlspecialchars($article['Title']);
 require_once 'includes/header.php'; 
@@ -84,7 +112,7 @@ require_once 'includes/header.php';
                 <h1 class="story-title"><?= htmlspecialchars($article['Title']) ?></h1>
                 
                 <div class="meta-line author">
-                    <span><?= $article['Authors'] ?? 'Tác giả đang cập nhật' ?></span>
+                    <span>Tác giả: </span> <span><?= $article['Authors'] ?? 'Tác giả đang cập nhật' ?></span>
                 </div>
 
                 <div class="story-desc">
@@ -126,37 +154,51 @@ require_once 'includes/header.php';
 
         <div class="divider"></div>
 
-        <section class="chapter-section">
-            <div class="section-title">Tổng <?= count($chapters) ?> tập</div>
-            
-        <div class="chapter-list">
-            <?php if(count($chapters) > 0): ?>
-                <?php foreach($chapters as $chap): ?>
-                    <?php 
-                        // Xử lý logic chọn ảnh: Ưu tiên ảnh chương, nếu không có thì lấy ảnh bìa
-                        $thumbSrc = !empty($chap['ChapterThumb']) 
-                                    ? getImageUrl($chap['ChapterThumb']) 
-                                    : getImageUrl($article['CoverImage']);
-                    ?>
-                    <a href="<?= BASE_URL ?>chapter/<?= $id ?>/<?= $chap['ChapterID'] ?>" class="chapter-row">
-                        <div class="chap-thumb-img">
-                            <img src="<?= $thumbSrc ?>" alt="Chapter Thumb" loading="lazy">
-                        </div>
-
-                        <div class="chap-info">
-                            <span class="chap-title">
-                                Chapter <?= $chap['Index'] ?> <?= $chap['Title'] ? ': '.htmlspecialchars($chap['Title']) : '' ?>
-                            </span>
-                            <div class="chap-meta">
-                                <span class="chap-date"><?= date('y.m.d', strtotime($chap['CreatedAt'])) ?></span>
-                            </div>
-                        </div>
-                    </a>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <p class="no-chap">Chưa có chương nào.</p>
-            <?php endif; ?>
+<section class="chapter-section">
+    
+    <div class="list-header-row">
+        <div class="list-total">
+            Tổng <?= count($chapters) ?> tập
         </div>
+        <div class="list-sort">
+            <a href="<?= makeSortUrl('desc') ?>" class="<?= $sortParam === 'desc' ? 'active' : '' ?>">
+                Xem mới nhất
+            </a>
+            
+            <span class="sep">|</span>
+            
+            <a href="<?= makeSortUrl('asc') ?>" class="<?= $sortParam === 'asc' ? 'active' : '' ?>">
+                Xem từ đầu
+            </a>
+        </div>
+    </div>
+    
+            <div class="chapter-list">
+                <?php if(count($chapters) > 0): ?>
+                    <?php foreach($chapters as $chap): ?>
+                        <?php 
+                            $thumbSrc = !empty($chap['ChapterThumb']) 
+                                        ? getImageUrl($chap['ChapterThumb']) 
+                                        : getImageUrl($article['CoverImage']);
+                        ?>
+                        <a href="<?= BASE_URL ?>chapter/<?= $id ?>/<?= $chap['ChapterID'] ?>" class="chapter-row">
+                            <div class="chap-thumb-img">
+                                <img src="<?= $thumbSrc ?>" alt="Chapter Thumb" loading="lazy">
+                            </div>
+                            <div class="chap-info">
+                                <span class="chap-title">
+                                    Chapter <?= $chap['Index'] ?> <?= $chap['Title'] ? ': '.htmlspecialchars($chap['Title']) : '' ?>
+                                </span>
+                                <div class="chap-meta">
+                                    <span class="chap-date"><?= date('y.m.d', strtotime($chap['CreatedAt'])) ?></span>
+                                </div>
+                            </div>
+                        </a>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p class="no-chap">Chưa có chương nào.</p>
+                <?php endif; ?>
+            </div>
         </section>
 
         <?php require_once 'includes/comment_section.php'; ?>
