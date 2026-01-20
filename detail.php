@@ -84,7 +84,7 @@ $pageTitle = htmlspecialchars($article['Title']);
 require_once 'includes/header.php'; 
 ?>
 
-<link rel="stylesheet" href="<?= BASE_URL ?>css/detail.css">
+<link rel="stylesheet" href="<?= BASE_URL ?>css/detail.css?v=1">
 
 <div class="main-container">
     <main class="content">

@@ -1,39 +1,25 @@
 /* =========================================
-   1. CORE VARIABLES & RESET (Code gốc của bạn)
+   1. CORE VARIABLES & RESET
    ========================================= */
 :root {
-    /* MÀU CHỦ ĐẠO MỚI */
     --primary-theme: #506891; 
-    
-    /* MÀU NỀN (DARK MODE) */
-    --bg-body: #1a1a1a;       /* Đen gần đậm */
-    --bg-element: #252525;    /* Nền cho các ô input/card/toolbar */
-    --bg-hover: #333333;      /* Màu khi di chuột vào */
-    
-    /* MÀU CHỮ */
-    --text-main: #e0e0e0;     /* Chữ chính (trắng ngà) */
-    --text-muted: #999999;    /* Chữ phụ (xám) */
-    --text-dark: #000000;     /* Dùng cho các badge nền sáng */
-
-    /* VIỀN & PHÂN CÁCH */
-    --border-color: #333333;  /* Viền tối màu */
-
-    /* BIẾN RIÊNG CHO TRANG VIEWER */
-    --viewer-width: 690px;    /* Chiều rộng chuẩn của ảnh truyện */
+    --bg-body: #1a1a1a;       
+    --bg-element: #252525;    
+    --bg-hover: #333333;      
+    --text-main: #e0e0e0;     
+    --text-muted: #999999;    
+    --text-dark: #000000;     
+    --border-color: #333333;  
+    --viewer-width: 690px;    /* Desktop width */
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Noto Sans', sans-serif;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Noto Sans', sans-serif; }
 
 body {
     background-color: var(--bg-body);
     color: var(--text-main);
     font-size: 13px;
-    overflow-y: scroll; /* Luôn hiện thanh cuộn để tránh nhảy trang */
+    overflow-y: scroll; /* Tránh nhảy layout khi thanh cuộn hiện/ẩn */
 }
 
 a { text-decoration: none; color: inherit; transition: color 0.2s; }
@@ -42,113 +28,82 @@ ul { list-style: none; }
 button { cursor: pointer; border: none; background: none; color: var(--text-main); }
 
 /* --- UTILITIES --- */
-.container, .header__container, .nav__container, .main-container, .sub-nav__container, .days-nav__container {
+.container, .header__container, .nav__container, .main-container {
     max-width: 1100px;
     margin: 0 auto;
     padding: 0 15px;
 }
 
-/* Badge & Dot */
-.badge-red {
-    background: #ff4d4d; color: white; font-size: 9px; padding: 1px 3px; border-radius: 50%; vertical-align: super;
-}
-.badge-dot {
-    display: inline-block; width: 4px; height: 4px; background: var(--primary-theme); border-radius: 50%; margin-left: 2px;
-}
-.text-green { color: var(--primary-theme); }
-
-
 /* =========================================
-   2. HEADER & NAV (Đồng bộ với trang chủ)
-   ========================================= */
-.header {
-    border-bottom: 1px solid var(--border-color);
-    padding: 15px 0;
-    background-color: var(--bg-body);
-}
-.header__container { display: flex; align-items: center; justify-content: space-between; }
-.header__logo { font-size: 20px; letter-spacing: -1px; color: var(--text-main); }
-
-.header__search { position: relative; width: 350px; }
-.header__search input {
-    width: 100%; padding: 8px 35px 8px 10px;
-    border: 1px solid var(--border-color);
-    background-color: var(--bg-body);
-    color: var(--text-main);
-    border-radius: 2px; outline: none;
-}
-.header__search input::placeholder { color: #555; }
-.header__search button { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
-
-/* Dùng chung class btn-login cho cả nút Header */
-.btn-login, .btn-header {
-    border: 1px solid var(--border-color); padding: 5px 12px; font-size: 11px; margin-left: 5px; color: var(--text-muted); border-radius: 2px;
-}
-.btn-login:hover, .btn-header:hover { border-color: var(--text-muted); color: var(--text-main); }
-
-/* NAV CHÍNH */
-.nav, .sub-nav {
-    border-bottom: 1px solid var(--border-color);
-    background-color: var(--bg-body);
-}
-.nav__container, .sub-nav__container { display: flex; align-items: center; height: 44px; }
-.nav__item, .nav-item {
-    font-weight: bold; margin-right: 25px; font-size: 14px; color: var(--text-main); height: 100%; display: flex; align-items: center; opacity: 0.8;
-}
-.nav__item:hover, .nav-item:hover { opacity: 1; }
-.nav__item--active, .nav-item.active {
-    background-color: var(--primary-theme); color: white; padding: 0 15px; margin-right: 15px; opacity: 1;
-}
-.nav__btn-creator, .btn-creator {
-    margin-left: auto; border: 1px solid var(--primary-theme); color: var(--primary-theme); font-weight: bold; padding: 4px 10px; border-radius: 3px; font-size: 11px;
-}
-.nav__btn-creator .badge-dot { background-color: var(--primary-theme); }
-
-/* NAV PHỤ (Thứ ngày - dùng riêng cho trang con) */
-.days-nav { border-bottom: 1px solid var(--border-color); margin-bottom: 0; background-color: var(--bg-body); }
-.days-nav__container { display: flex; height: 40px; align-items: center; }
-.days-nav a { margin-right: 20px; font-size: 12px; font-weight: normal; color: var(--text-muted); }
-.days-nav a:hover { color: var(--text-main); }
-.days-nav a.active { color: var(--primary-theme); font-weight: bold; border-bottom: 2px solid var(--primary-theme); height: 100%; display: flex; align-items: center; }
-
-
-/* =========================================
-   3. VIEWER SPECIFIC STYLES (Trang đọc truyện)
+   2. VIEWER SPECIFIC STYLES
    ========================================= */
 
-/* Thanh công cụ đọc truyện (Toolbar) */
+/* --- TOOLBAR --- */
 .viewer-toolbar {
-    background-color: var(--bg-element); /* Dùng màu #252525 đồng bộ */
+    background-color: var(--bg-element);
     color: var(--text-main);
     padding: 0 20px;
     height: 50px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid #000; /* Viền đậm hơn chút để tách biệt */
+    border-bottom: 1px solid #000;
     position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
-.toolbar-left { display: flex; align-items: center; }
-.btn-back { font-size: 18px; margin-right: 15px; color: var(--text-muted); }
+.toolbar-left { 
+    display: flex; 
+    align-items: center; 
+    overflow: hidden; 
+    max-width: 60%; /* Giới hạn chiều rộng để không đẩy toolbar phải ra ngoài */
+}
+
+.btn-back { 
+    font-size: 18px; 
+    margin-right: 15px; 
+    color: var(--text-muted); 
+    flex-shrink: 0; 
+}
 .btn-back:hover { color: var(--text-main); }
 
-.chapter-title { font-size: 14px; font-weight: normal; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chapter-title { 
+    font-size: 14px; 
+    font-weight: normal; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    display: flex;
+    align-items: center;
+}
 .webtoon-name { font-weight: bold; }
 .divider { margin: 0 10px; color: var(--border-color); font-size: 12px; }
 
-.toolbar-right { display: flex; align-items: center; font-size: 13px; }
-.btn-toolbar { display: flex; align-items: center; color: var(--text-main); font-weight: bold; transition: opacity 0.2s; }
-.btn-toolbar i { margin-right: 6px; font-size: 14px; }
+/* OPTIMIZED: Toolbar Right */
+.toolbar-right { 
+    display: flex; 
+    align-items: center; 
+    font-size: 13px; 
+    flex-shrink: 0;
+    /* QUAN TRỌNG: Luôn tự đẩy về phía bên phải cùng */
+    margin-left: auto; 
+    gap: 5px; /* Khoảng cách giữa các nút */
+}
+
+.btn-toolbar { 
+    display: flex; 
+    align-items: center; 
+    color: var(--text-main); 
+    font-weight: bold; 
+    transition: opacity 0.2s; 
+    padding: 5px 8px; /* Tăng vùng bấm nhẹ */
+}
+.btn-toolbar i { margin-right: 6px; margin-left: 6px; font-size: 14px; }
 .btn-toolbar:hover { opacity: 0.8; }
-
-/* Nút Interest dùng màu chủ đạo */
 .btn-interest i { color: var(--primary-theme); font-size: 16px; }
-
-/* Nút điều hướng disabled */
 .btn-toolbar.disabled { color: var(--border-color); pointer-events: none; font-weight: normal; }
 
-/* NỘI DUNG TRUYỆN */
+/* --- VIEWER CONTAINER --- */
 .viewer-container {
     max-width: var(--viewer-width);
     margin: 0 auto;
@@ -156,18 +111,166 @@ button { cursor: pointer; border: none; background: none; color: var(--text-main
     min-height: 100vh;
 }
 
-/* Cảnh báo độ tuổi */
-.viewer-warning { text-align: center; padding: 100px 20px; color: var(--text-muted); font-size: 18px; }
-.age-limit {
-    display: inline-block; width: 36px; height: 36px;
-    border: 2px solid var(--text-muted); border-radius: 50%;
-    text-align: center; line-height: 32px; font-weight: bold; margin-right: 8px;
-}
-.viewer-warning p { font-size: 12px; margin-top: 10px; opacity: 0.7; }
-
-/* Dải ảnh */
 .comic-strip { width: 100%; }
 .comic-strip img { display: block; width: 100%; height: auto; }
 
-/* Footer của Viewer */
-.viewer-footer { padding: 50px 0; text-align: center; color: var(--text-muted); font-size: 14px; }
+/* --- FOOTER NAV --- */
+/* --- FOOTER SPECIFIC STYLES --- */
+
+/* Khung bao ngoài của Footer */
+.viewer-footer {
+    padding: 0;
+    margin-top: 50px; /* Cách phần ảnh truyện một chút */
+}
+
+/* Tùy biến lại Toolbar khi ở chế độ Footer */
+.footer-mode {
+    position: static; 
+    box-shadow: none;
+    background-color: var(--bg-element);
+    width: 100%;
+    justify-content: space-around;
+    margin-left: 0;
+    display: flex;
+    gap: 10px; 
+    border-bottom: none;
+    width: 100%;
+    justify-content: space-around; /* Chia đều khoảng cách các nút cho đẹp */
+    margin-left: 0;
+}
+
+.footer-mode .toolbar-left {
+    display: none !important;
+}
+
+.footer-mode .toolbar-right {
+    margin-left: 0 !important; /* Hủy bỏ lệnh đẩy sang phải */
+    width: 100%;               /* Chiếm toàn bộ chiều rộng */
+    justify-content: space-around;   /* Căn giữa các nút Prev/List/Next */                 /* Tăng khoảng cách giữa các nút cho thoáng */
+}
+
+.footer-mode #btn-follow {
+    display: none; /* Ẩn nút Theo dõi khi ở chế độ Footer */
+}
+
+.btn-nav-round {
+    width: 40px; height: 40px; 
+    border-radius: 50%; 
+    border: 1px solid var(--border-color); 
+    display: flex; align-items: center; justify-content: center; 
+    color: var(--text-main);
+    background-color: var(--bg-element);
+    transition: 0.2s;
+}
+.btn-nav-round:hover { background-color: var(--primary-theme); border-color: var(--primary-theme); color: #fff; }
+.btn-nav-round.disabled { opacity: 0.5; pointer-events: none; }
+
+.btn-nav-main {
+    padding: 8px 30px; 
+    border-radius: 20px; 
+    border: 1px solid var(--border-color); 
+    color: var(--text-main); 
+    font-weight: bold; 
+    background: var(--bg-element);
+    transition: 0.2s;
+}
+.btn-nav-main:hover { background-color: var(--bg-hover); }
+
+/* --- COMMENTS SECTION --- */
+.reader-comments-wrapper {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 30px 20px;
+    background-color: var(--bg-element);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+.reader-comments-wrapper h3 {
+    color: var(--text-main);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+/* =========================================
+   3. RESPONSIVE / MOBILE STYLES
+   ========================================= */
+
+/* Tablet (Dưới 768px): Thu gọn giao diện */
+@media screen and (max-width: 768px) {
+    :root {
+        --viewer-width: 100%; 
+    }
+    .viewer-toolbar {
+        padding: 0 10px;
+    }
+
+    /* Ẩn text, chỉ hiện icon */
+    
+    /* Ẩn các class hỗ trợ */
+    .hidden-mobile { display: none !important; }
+    .chapter-subtitle { display: none; }
+    .episode-name { display: none; }
+    
+    .reader-comments-wrapper {
+        margin: 20px 0;
+        border-radius: 0;
+        border-left: none; 
+        border-right: none;
+        padding: 20px 15px;
+    }
+
+        
+    /* 1. SỬA LỖI: Chỉ ẩn toolbar trái, KHÔNG ẩn toàn bộ toolbar */
+    .toolbar-left {
+        display: none !important;
+    }
+    
+    /* 2. Toolbar phải tự giãn ra cho dễ bấm */
+    .toolbar-right {
+        width: 100%;
+        justify-content: space-around; /* Chia đều khoảng cách các nút cho đẹp */
+        margin-left: 0;
+    }
+    
+    .btn-toolbar { 
+        padding: 5px 15px; /* Tăng vùng bấm cho ngón tay */
+    }
+
+/* 1. Thiết lập Flexbox và khoảng cách cho khung chứa */
+    .toolbar-right {
+        display: flex;
+        gap: 10px; 
+    }
+
+    /* 2. Ẩn các dấu gạch đứng (|) đi cho đỡ rối */
+    .toolbar-right .divider {
+        display: none;
+    }
+
+
+    /* Vị trí 1: Nút Chương trước (btn-prev) */
+    .btn-prev {
+        order: 1;
+    }
+
+    /* Vị trí 2: Nút Theo dõi (#btn-follow) */
+    #btn-follow {
+        order: 2;
+    }
+
+    /* Vị trí 3: Nút Danh sách (Tìm theo icon hoặc href nếu chưa đặt class) */
+    .btn-toolbar:has(.fa-list-ul) { 
+        order: 3;
+    }
+    
+    .toolbar-right a[href*="chapter-list"] {
+        order: 4;
+    }
+
+    /* Nút Chương sau (Next) */
+    .toolbar-right a[title="Chương sau"] {
+        order: 5;
+    }
+
+}

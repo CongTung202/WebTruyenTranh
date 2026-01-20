@@ -94,21 +94,32 @@
     background-color: var(--primary-theme); /* Màu xanh đặc trưng */
     color: #fff;
     border: none;
-    padding: 0 25px;
+/* --- CÁC DÒNG CẦN SỬA --- */
+    width: 100%;             /* Có thể chiếm hết khung chứa */
+    max-width: 160px;        /* [QUAN TRỌNG] Giới hạn chiều rộng tối đa, dài hơn sẽ cắt */
+    padding: 0 10px;         /* Padding vừa phải */
+    
+    display: flex;           /* Dùng flex để căn chỉnh */
+    align-items: center;     /* Căn giữa dọc */
+    justify-content: center; /* Căn giữa ngang */
+    /* ------------------------ */
+
     height: 48px;
-    border-radius: 2px; 
-    font-size: 15px;
+    border-radius: 2px;
+    font-size: 14px;         /* Giảm font nhẹ nếu cần */
     font-weight: bold;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    gap: 5px;                /* Khoảng cách giữa icon và chữ */
     transition: 0.2s;
+    
+    /* Đảm bảo nội dung không tràn ra ngoài khung bo tròn */
+    overflow: hidden;
 }
 
 .btn-naver-green.active {
     background-color: #333; /* Màu khi đã follow */
     color: #aaa;
+    width: auto;
 }
 
 .btn-naver-green .count {

@@ -99,29 +99,6 @@ require_once 'includes/header.php';
 
 <link rel="stylesheet" href="<?= BASE_URL ?>css/chapter.css">
 
-<style>
-    /* Nền đen cho trang đọc */
-    body { background-color: var(--bg-body); overflow-x: hidden; }
-    
-    /* Vùng chứa bình luận: Rộng bằng vùng ảnh truyện */
-    .reader-comments-wrapper {
-        max-width: 800px; /* Độ rộng vừa phải để dễ đọc */
-        margin: 0 auto;
-        padding: 40px 15px;
-        background-color: var(--bg-element);
-        border-radius: 8px;
-        margin-top: 50px;
-        margin-bottom: 50px;
-        border: 1px solid var(--border-color);
-    }
-    
-    .reader-comments-wrapper h3 {
-        color: var(--text-main);
-        border-bottom: 1px solid var(--border-color);
-        padding-bottom: 15px;
-        margin-bottom: 20px;
-    }
-</style>
 
 <div class="viewer-toolbar">
     <div class="toolbar-left">
@@ -130,14 +107,16 @@ require_once 'includes/header.php';
         </a>
         
         <h1 class="chapter-title">  
-            <a href="<?= BASE_URL ?>truyen/<?= $articleId ?>" class="btn-home">
+            <a href="<?= BASE_URL ?>truyen/<?= $articleId ?>" class="btn-home hidden-mobile">
                 <i class="fa-solid fa-house me-1"></i>
                 <span class="webtoon-name"><?= htmlspecialchars($chapter['ArticleTitle']) ?></span>
             </a>
-            <span class="divider">|</span>
+            
+            <span class="divider hidden-mobile">|</span>
+            
             <span class="episode-name">
-                Chapter <?= $chapter['Index'] ?> 
-                <?= !empty($chapter['Title']) ? ': ' . htmlspecialchars($chapter['Title']) : '' ?>
+                <span class="hidden-mobile">Chapter</span> <?= $chapter['Index'] ?> 
+                <span class="chapter-subtitle"><?= !empty($chapter['Title']) ? ': ' . htmlspecialchars($chapter['Title']) : '' ?></span>
             </span>
         </h1>
     </div>
@@ -145,21 +124,30 @@ require_once 'includes/header.php';
     <div class="toolbar-right">
         <button id="btn-follow" class="btn-toolbar btn-interest" data-id="<?= $articleId ?>">
             <?php if ($isBookmarked): ?>
-                <i class="fa-solid fa-check-circle"></i> <span>Đã theo dõi</span>
+                <i class="fa-solid fa-check-circle"></i> <span class="btn-text">Đã theo dõi</span>
             <?php else: ?>
-                <i class="fa-solid fa-circle-plus"></i> <span>Theo dõi</span>
+                <i class="fa-solid fa-circle-plus"></i> <span class="btn-text">Theo dõi</span>
             <?php endif; ?>
         </button>
 
         <span class="divider">|</span>
-        <a href="<?= BASE_URL ?>truyen/<?= $articleId ?>#chapter-list" class="btn-toolbar">
-            <i class="fa-solid fa-list-ul"></i> DS chương
+
+        <a href="<?= $prevChap ? BASE_URL . 'chapter/' . $articleId . '/' . $prevChap['ChapterID'] : '#' ?>" 
+        class="btn-toolbar nav-arrow <?= !$prevChap ? 'disabled' : '' ?>" title="Chương trước">
+            <i class="fa-solid fa-caret-left ms-1"></i> <span class="btn-text">Trước</span>
+        </a> 
+
+        <span class="divider">|</span>
+        
+        <a href="<?= BASE_URL ?>truyen/<?= $articleId ?>#chapter-list" class="btn-toolbar" title="Danh sách chương">
+            <i class="fa-solid fa-list-ul"></i> <span class="btn-text">DS chương</span>
         </a>
+        
         <span class="divider">|</span>
         
         <a href="<?= $nextChap ? BASE_URL . 'chapter/' . $articleId . '/' . $nextChap['ChapterID'] : '#' ?>" 
-           class="btn-toolbar nav-arrow <?= !$nextChap ? 'disabled' : '' ?>">
-            Sau <i class="fa-solid fa-caret-right ms-1"></i>
+           class="btn-toolbar nav-arrow <?= !$nextChap ? 'disabled' : '' ?>" title="Chương sau">
+            <span class="btn-text">Sau</span> <i class="fa-solid fa-caret-right ms-1"></i>
         </a>
     </div>
 </div>
@@ -179,37 +167,39 @@ require_once 'includes/header.php';
     </div>
 
     <div class="viewer-footer">
-        <p style="margin-bottom: 20px; color: var(--text-muted);">Hết Chapter <?= $chapter['Index'] ?></p>
-        
-        <div style="display: flex; justify-content: center; gap: 15px;">
-            <a href="<?= $prevChap ? BASE_URL . 'chapter/' . $articleId . '/' . $prevChap['ChapterID'] : '#' ?>" 
-               class="btn-nav-round <?= !$prevChap ? 'disabled' : '' ?>" 
-               style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; color: var(--text-main);">
-               <i class="fa-solid fa-chevron-left"></i>
-            </a>
+        <div class="viewer-toolbar footer-mode">
+            <div class="toolbar-right">
+                <button id="btn-follow" class="btn-toolbar btn-interest" data-id="<?= $articleId ?>">
+                    <?php if ($isBookmarked): ?>
+                        <i class="fa-solid fa-check-circle"></i> <span class="btn-text">Đã theo dõi</span>
+                    <?php else: ?>
+                        <i class="fa-solid fa-circle-plus"></i> <span class="btn-text">Theo dõi</span>
+                    <?php endif; ?>
+                </button>
 
-            <a href="<?= BASE_URL ?>truyen/<?= $articleId ?>" 
-               style="padding: 8px 30px; border-radius: 20px; border: 1px solid var(--border-color); color: var(--text-main); font-weight: bold; background: var(--bg-element);">
-               Danh sách
-            </a>
+                <a href="<?= $prevChap ? BASE_URL . 'chapter/' . $articleId . '/' . $prevChap['ChapterID'] : '#' ?>" 
+                class="btn-toolbar nav-arrow <?= !$prevChap ? 'disabled' : '' ?>" title="Chương trước">
+                    <i class="fa-solid fa-caret-left ms-1"></i> <span class="btn-text">Trước</span>
+                </a> 
 
-            <a href="<?= $nextChap ? BASE_URL . 'chapter/' . $articleId . '/' . $nextChap['ChapterID'] : '#' ?>" 
-               class="btn-nav-round <?= !$nextChap ? 'disabled' : '' ?>" 
-               style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; color: var(--text-main);">
-               <i class="fa-solid fa-chevron-right"></i>
-            </a>
+                
+                <a href="<?= BASE_URL ?>truyen/<?= $articleId ?>#chapter-list" class="btn-toolbar" title="Danh sách chương">
+                    <i class="fa-solid fa-list-ul"></i> <span class="btn-text">DS chương</span>
+                </a>
+                
+                <a href="<?= $nextChap ? BASE_URL . 'chapter/' . $articleId . '/' . $nextChap['ChapterID'] : '#' ?>" 
+                class="btn-toolbar nav-arrow <?= !$nextChap ? 'disabled' : '' ?>" title="Chương sau">
+                    <span class="btn-text">Sau</span> <i class="fa-solid fa-caret-right ms-1"></i>
+                </a>
+            </div>
         </div>
     </div>
     
     <div class="reader-comments-wrapper" id="comment-section">
         <h3><i class="fas fa-comments me-2"></i>Bình luận</h3>
         <?php 
-        // [SỬA LỖI] Gán biến $id để file comment_section.php hiểu được
         $id = $articleId; 
-        
-        // Tạo biến redirect để khi bình luận xong thì quay lại đúng trang đọc truyện này
         $currentUrl = "../read.php?id=$articleId&chap=$chapterId#comment-section";
-        
         require_once 'includes/comment_section.php'; 
         ?>
     </div>
@@ -217,26 +207,36 @@ require_once 'includes/header.php';
 </main>
 
 <script>
-document.getElementById('btn-follow').addEventListener('click', function() {
-    const btn = this;
+// Hàm xử lý chung cho việc Toggle Follow
+function toggleFollow(btn) {
     const articleId = btn.getAttribute('data-id');
+    // Lấy tất cả các icon và text trong nút ĐANG ĐƯỢC BẤM
     const icon = btn.querySelector('i');
-    const text = btn.querySelector('span');
+    const text = btn.querySelector('.btn-text'); // Lưu ý: Cần class .btn-text ở HTML
 
     // Gọi API (Backend)
     fetch('includes/action_bookmark.php?ajax=1&id=' + articleId)
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            if (data.is_bookmarked) {
-                // Đã theo dõi
-                icon.className = 'fa-solid fa-check-circle';
-                text.innerText = 'Đã theo dõi';
-            } else {
-                // Hủy theo dõi
-                icon.className = 'fa-solid fa-circle-plus';
-                text.innerText = 'Theo dõi';
-            }
+            // Cập nhật giao diện cho CẢ 2 NÚT (Header và Footer) cùng lúc
+            const allButtons = document.querySelectorAll('.btn-interest[data-id="'+articleId+'"]');
+            
+            allButtons.forEach(button => {
+                const i = button.querySelector('i');
+                const span = button.querySelector('.btn-text');
+                
+                if (data.is_bookmarked) {
+                    button.classList.add('active'); // Thêm class active nếu cần CSS
+                    i.className = 'fa-solid fa-check-circle';
+                    if(span) span.innerText = 'Đã theo dõi';
+                } else {
+                    button.classList.remove('active');
+                    i.className = 'fa-solid fa-circle-plus';
+                    if(span) span.innerText = 'Theo dõi';
+                }
+            });
+            
         } else if (data.status === 'login_required') {
             alert("Vui lòng đăng nhập để theo dõi truyện!");
             window.location.href = 'login.php';
@@ -245,7 +245,19 @@ document.getElementById('btn-follow').addEventListener('click', function() {
         }
     })
     .catch(error => console.error('Error:', error));
-});
+}
+
+// Gán sự kiện cho nút trên Header
+const btnHeader = document.getElementById('btn-follow');
+if(btnHeader) {
+    btnHeader.addEventListener('click', function() { toggleFollow(this); });
+}
+
+// Gán sự kiện cho nút dưới Footer
+const btnFooter = document.getElementById('btn-follow-footer');
+if(btnFooter) {
+    btnFooter.addEventListener('click', function() { toggleFollow(this); });
+}
 </script>
 
 </body>

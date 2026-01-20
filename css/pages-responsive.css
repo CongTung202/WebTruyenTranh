@@ -623,13 +623,11 @@
 @media (max-width: 575px) {
     /* Sắp xếp lại sticky elements cho mobile */
     .header {
-        position: sticky;
         top: 0;
         z-index: 1000;
     }
 
     .nav {
-        position: sticky;
         top: 50px; /* Dưới header */
         z-index: 999;
     }
