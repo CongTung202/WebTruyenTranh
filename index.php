@@ -1,29 +1,42 @@
 <?php
 require_once 'includes/db.php';
 $pageTitle = "Trang chủ - GTSCHUNDER";
-require_once 'includes/header.php'; 
+require_once 'includes/header.php';
 
-// 1. Lấy truyện mới cập nhật (kèm tác giả đầu tiên)
+// Hàm tính thời gian tương đối
+function getRelativeTime($datetime) {
+    $time = strtotime($datetime);
+    $now = time();
+    $diff = $now - $time;
+    
+    if ($diff < 60) return $diff . ' giây trước';
+    else if ($diff < 3600) return floor($diff / 60) . ' phút trước';
+    else if ($diff < 86400) return floor($diff / 3600) . ' giờ trước';
+    else if ($diff < 604800) return floor($diff / 86400) . ' ngày trước';
+    else if ($diff < 2592000) return floor($diff / 604800) . ' tuần trước';
+    else return floor($diff / 2592000) . ' tháng trước';
+} 
+
+// 1. Lấy truyện mới cập nhật (kèm chapter gần nhất)
 $stmtNew = $pdo->query("
     SELECT a.*, 
-           GROUP_CONCAT(DISTINCT auth.Name SEPARATOR ', ') as Authors 
+           (SELECT c.`Index` FROM chapters c WHERE c.ArticleID = a.ArticleID AND c.IsDeleted = 0 ORDER BY c.CreatedAt DESC LIMIT 1) as LatestChapterIndex,
+           (SELECT c.Title FROM chapters c WHERE c.ArticleID = a.ArticleID AND c.IsDeleted = 0 ORDER BY c.CreatedAt DESC LIMIT 1) as LatestChapterTitle,
+           (SELECT c.CreatedAt FROM chapters c WHERE c.ArticleID = a.ArticleID AND c.IsDeleted = 0 ORDER BY c.CreatedAt DESC LIMIT 1) as LatestChapterDate
     FROM articles a 
-    LEFT JOIN articles_authors aa ON a.ArticleID = aa.ArticleID 
-    LEFT JOIN authors auth ON aa.AuthorID = auth.AuthorID 
     WHERE a.IsDeleted = 0 
-    GROUP BY a.ArticleID
     ORDER BY a.UpdatedAt DESC 
     LIMIT 10
 ");
 $articlesNew = $stmtNew->fetchAll();
 
-// 2. Lấy truyện nhiều lượt xem (Top 5, kèm tác giả)
+// 2. Lấy truyện nhiều lượt xem (Top 5)
 $stmtTop = $pdo->query("
     SELECT a.*, 
-           GROUP_CONCAT(DISTINCT auth.Name SEPARATOR ', ') as Authors 
+           (SELECT c.`Index` FROM chapters c WHERE c.ArticleID = a.ArticleID AND c.IsDeleted = 0 ORDER BY c.CreatedAt DESC LIMIT 1) as LatestChapterIndex,
+           (SELECT c.Title FROM chapters c WHERE c.ArticleID = a.ArticleID AND c.IsDeleted = 0 ORDER BY c.CreatedAt DESC LIMIT 1) as LatestChapterTitle,
+           (SELECT c.CreatedAt FROM chapters c WHERE c.ArticleID = a.ArticleID AND c.IsDeleted = 0 ORDER BY c.CreatedAt DESC LIMIT 1) as LatestChapterDate
     FROM articles a 
-    LEFT JOIN articles_authors aa ON a.ArticleID = aa.ArticleID 
-    LEFT JOIN authors auth ON aa.AuthorID = auth.AuthorID 
     WHERE a.IsDeleted = 0 
     GROUP BY a.ArticleID
     ORDER BY a.ViewCount DESC 
@@ -52,12 +65,15 @@ $articlesTop = $stmtTop->fetchAll();
                     <span class="badge-up">UP</span>
                 </div>
                 <h4 class="card__title"><?= htmlspecialchars($art['Title']) ?></h4>
-                <p class="card__author">
+                <p class="card__chapter">
                     <?php 
-                    if (!empty($art['Authors'])) {
-                        echo htmlspecialchars(explode(', ', $art['Authors'])[0]); // Tác giả đầu tiên
+                    if (!empty($art['LatestChapterDate'])) {
+                        $chapterIndex = !empty($art['LatestChapterIndex']) ? $art['LatestChapterIndex'] : '?';
+                        $chapterTitle = !empty($art['LatestChapterTitle']) ? htmlspecialchars($art['LatestChapterTitle']) : 'N/A';
+                        $relativeTime = getRelativeTime($art['LatestChapterDate']);
+                        echo '<i class="fas fa-book-open"></i> Chương ' . $chapterIndex . ' - '. $relativeTime;
                     } else {
-                        echo 'Đang cập nhật';
+                        echo '<i class="fas fa-book-open"></i> Chưa có chương';
                     }
                     ?>
                 </p>
@@ -85,6 +101,17 @@ $articlesTop = $stmtTop->fetchAll();
                     <span class="rank-number"><?= $rank ?></span>
                 </div>
                 <h4 class="card__title"><?= htmlspecialchars($art['Title']) ?></h4>
+                <p class="card__chapter">
+                    <?php 
+                    if (!empty($art['LatestChapterDate'])) {
+                        $chapterIndex = !empty($art['LatestChapterIndex']) ? $art['LatestChapterIndex'] : '?';
+                        $relativeTime = getRelativeTime($art['LatestChapterDate']);
+                        echo '<i class="fas fa-book-open"></i> Chương ' . $chapterIndex . ' - ' . $relativeTime;
+                    } else {
+                        echo '<i class="fas fa-book-open"></i> Chưa có chương';
+                    }
+                    ?>
+                </p>
             </article>
             <?php $rank++; endforeach; ?>
         </div>

@@ -437,31 +437,87 @@
 .list-sort {
     font-size: 13px;
     color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
-.list-sort a {
-    text-decoration: none;
-    color: var(--text-muted); /* Màu xám khi chưa chọn */
+/* Sort Button */
+.list-sort .sort-btn {
+    background-color: transparent;
+    color: var(--text-muted);
+    border: none;
+    padding: 0;
+    font-size: 13px;
     cursor: pointer;
     transition: color 0.2s;
 }
 
-.list-sort a:hover {
+.list-sort .sort-btn:hover {
     color: var(--text-main);
 }
 
-/* Trạng thái đang chọn (Active) */
-.list-sort a.active {
-    color: var(--text-main); /* Màu sáng/đen đậm */
+.list-sort .sort-btn.active {
+    color: var(--text-main);
     font-weight: bold;
 }
 
 /* Dấu gạch đứng ngăn cách */
 .list-sort .sep {
-    margin: 0 8px;
-    color: #444; /* Màu gạch nhạt */
+    margin: 0 0;
+    color: #444;
     font-size: 11px;
     vertical-align: middle;
+}
+
+/* Jump to Chapter */
+.jump-to-chapter {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.jump-to-chapter input {
+    width: 60px;
+    padding: 5px 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 12px;
+    background-color: transparent;
+    color: var(--text-main);
+}
+
+.jump-to-chapter input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+.jump-to-chapter input:focus {
+    outline: none;
+    border-color: var(--primary-theme);
+    box-shadow: 0 0 4px rgba(0, 150, 100, 0.2);
+}
+
+.btn-jump {
+    padding: 5px 12px;
+    background-color: transparent;
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-jump:hover {
+    background-color: var(--bg-hover);
+    border-color: var(--primary-theme);
+}
+
+.btn-jump:active {
+    background-color: var(--primary-theme);
+    color: #fff;
 }
 
 /* --- NÚT "ĐỌCMỚI NHẤT" VÀ "ĐỌC TỪ ĐẦU" --- */

@@ -188,15 +188,24 @@ require_once 'includes/header.php';
             Tổng <?= $totalChapters ?> tập
         </div>
         <div class="list-sort">
-            <a href="<?= makeSortUrl('desc') ?>" class="<?= $sortParam === 'desc' ? 'active' : '' ?>">
+            <!-- SORT BUTTONS (AJAX) -->
+            <button id="btn-sort-latest" class="sort-btn <?= $sortParam === 'desc' ? 'active' : '' ?>" data-sort="desc">
                 Xem mới nhất
-            </a>
+            </button>
             
             <span class="sep">|</span>
             
-            <a href="<?= makeSortUrl('asc') ?>" class="<?= $sortParam === 'asc' ? 'active' : '' ?>">
+            <button id="btn-sort-first" class="sort-btn <?= $sortParam === 'asc' ? 'active' : '' ?>" data-sort="asc">
                 Xem từ đầu
-            </a>
+            </button>
+
+            <!-- JUMP TO CHAPTER -->
+            <span class="sep">|</span>
+
+            <div class="jump-to-chapter">
+                <input type="number" id="input-chapter-num" min="1" max="<?= $totalChapters ?>" placeholder="Nhập chap" title="Nhập số chapter từ 1 đến <?= $totalChapters ?>">
+                <button id="btn-jump-chapter" class="btn-jump">Nhảy tới</button>
+            </div>
         </div>
     </div>
     
@@ -516,6 +525,192 @@ if(btnReadFirst) {
         } else {
             showToast('Không tìm thấy chương nào để đọc', 'warning');
         }
+    });
+}
+
+// ========================================
+// SORT CHAPTER AJAX
+// ========================================
+const sortBtns = document.querySelectorAll('.sort-btn');
+sortBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+        const sortValue = this.getAttribute('data-sort');
+        console.log('Sort:', sortValue);
+        
+        // Cập nhật active button
+        sortBtns.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Load chapters với AJAX
+        loadChapters(sortValue, 1);
+    });
+});
+
+// ========================================
+// JUMP TO CHAPTER
+// ========================================
+const inputChapterNum = document.getElementById('input-chapter-num');
+const btnJumpChapter = document.getElementById('btn-jump-chapter');
+
+if(btnJumpChapter) {
+    btnJumpChapter.addEventListener('click', function() {
+        const chapterNum = parseInt(inputChapterNum.value);
+        const totalChapters = parseInt(inputChapterNum.max);
+        
+        if(!chapterNum || chapterNum < 1 || chapterNum > totalChapters) {
+            showToast('Vui lòng nhập số chapter từ 1 đến ' + totalChapters, 'warning');
+            return;
+        }
+        
+        console.log('Nhảy tới chapter:', chapterNum);
+        jumpToChapter(chapterNum);
+    });
+
+    // Enter key cũng trigger button
+    inputChapterNum.addEventListener('keypress', function(e) {
+        if(e.key === 'Enter') {
+            btnJumpChapter.click();
+        }
+    });
+}
+
+// ========================================
+// AJAX FUNCTION: LOAD CHAPTERS
+// ========================================
+function loadChapters(sort, page) {
+    const articleId = '<?= $id ?>';
+    const url = BASE_URL + 'includes/load_chapters.php?id=' + articleId + '&sort=' + sort + '&page=' + page;
+    
+    console.log('Loading chapters from:', url);
+    
+    fetch(url)
+    .then(response => response.json())
+    .then(data => {
+        if(data.status === 'success') {
+            console.log('Chapters loaded:', data);
+            // Cập nhật danh sách chapter
+            updateChapterList(data.chapters, data.totalChapters);
+            // Cập nhật pagination
+            updatePagination(data.totalPages, page, sort);
+        } else {
+            showToast(data.message || 'Lỗi tải chapter', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Load chapters error:', error);
+        showToast('Lỗi kết nối', 'error');
+    });
+}
+
+// ========================================
+// UPDATE CHAPTER LIST
+// ========================================
+function updateChapterList(chapters, totalChapters) {
+    const chapterList = document.querySelector('.chapter-list');
+    
+    if(chapters.length === 0) {
+        chapterList.innerHTML = '<p class="no-chap">Chưa có chương nào.</p>';
+        return;
+    }
+    
+    let html = '';
+    chapters.forEach(chapter => {
+        const thumbSrc = chapter.thumb || '<?= getImageUrl($article['CoverImage']) ?>';
+        html += `
+            <a href="${BASE_URL}chapter/<?= $id ?>/${chapter.id}" class="chapter-row">
+                <div class="chap-thumb-img">
+                    <img src="${thumbSrc}" alt="Chapter Thumb" loading="lazy">
+                </div>
+                <div class="chap-info">
+                    <span class="chap-title">
+                        Chapter ${chapter.index} ${chapter.title ? ': ' + chapter.title : ''}
+                    </span>
+                    <div class="chap-meta">
+                        <span class="chap-date">${chapter.date}</span>
+                    </div>
+                </div>
+            </a>
+        `;
+    });
+    
+    chapterList.innerHTML = html;
+    console.log('Chapter list updated');
+}
+
+// ========================================
+// UPDATE PAGINATION
+// ========================================
+function updatePagination(totalPages, currentPage, sort) {
+    if(totalPages <= 1) return;
+    
+    const paginationDiv = document.querySelector('.chapter-pagination');
+    if(!paginationDiv) return;
+    
+    let html = '';
+    const startPage = Math.max(1, currentPage - 2);
+    const endPage = Math.min(totalPages, currentPage + 2);
+    
+    // Previous button
+    if(currentPage > 1) {
+        html += `<a href="#" data-page="1" data-sort="${sort}" class="pagination-link prev"><i class="fas fa-chevron-left"></i></a>`;
+        html += `<a href="#" data-page="${currentPage - 1}" data-sort="${sort}" class="pagination-link prev">Trước</a>`;
+    } else {
+        html += `<span class="prev disabled"><i class="fas fa-chevron-left"></i></span>`;
+        html += `<span class="prev disabled">Trước</span>`;
+    }
+    
+    // Page numbers
+    if(startPage > 1) html += '<span>...</span>';
+    for(let p = startPage; p <= endPage; p++) {
+        if(p === currentPage) {
+            html += `<span class="active">${p}</span>`;
+        } else {
+            html += `<a href="#" data-page="${p}" data-sort="${sort}" class="pagination-link">${p}</a>`;
+        }
+    }
+    if(endPage < totalPages) html += '<span>...</span>';
+    
+    // Next button
+    if(currentPage < totalPages) {
+        html += `<a href="#" data-page="${currentPage + 1}" data-sort="${sort}" class="pagination-link next">Sau</a>`;
+        html += `<a href="#" data-page="${totalPages}" data-sort="${sort}" class="pagination-link next"><i class="fas fa-chevron-right"></i></a>`;
+    } else {
+        html += `<span class="next disabled">Sau</span>`;
+        html += `<span class="next disabled"><i class="fas fa-chevron-right"></i></span>`;
+    }
+    
+    paginationDiv.innerHTML = html;
+    
+    // Gắn event listener cho pagination links
+    document.querySelectorAll('.pagination-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const page = link.getAttribute('data-page');
+            const sortValue = link.getAttribute('data-sort');
+            loadChapters(sortValue, page);
+        });
+    });
+}
+
+// ========================================
+// JUMP TO CHAPTER FUNCTION
+// ========================================
+function jumpToChapter(chapterNum) {
+    const articleId = '<?= $id ?>';
+    const url = BASE_URL + 'includes/get_chapter_id.php?id=' + articleId + '&num=' + chapterNum;
+    
+    fetch(url)
+    .then(response => response.json())
+    .then(data => {
+        if(data.status === 'success' && data.chapter_id) {
+            window.location.href = BASE_URL + 'chapter/' + articleId + '/' + data.chapter_id;
+        } else {
+            showToast(data.message || 'Không tìm thấy chapter', 'warning');
+        }
+    })
+    .catch(error => {
+        console.error('Jump to chapter error:', error);
+        showToast('Lỗi kết nối', 'error');
     });
 }
 

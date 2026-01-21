@@ -77,6 +77,18 @@ $current_page = basename($_SERVER['PHP_SELF']);
             border-radius: 6px;
             z-index: 1000;
             overflow: hidden;
+            animation: slideInFromRight 0.3s ease-out;
+        }
+        
+        @keyframes slideInFromRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
         
         /* Class hiển thị dropdown */

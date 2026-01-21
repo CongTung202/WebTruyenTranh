@@ -2,6 +2,20 @@
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
 
+// Hàm tính thời gian tương đối
+function getRelativeTime($datetime) {
+    $time = strtotime($datetime);
+    $now = time();
+    $diff = $now - $time;
+    
+    if ($diff < 60) return $diff . ' giây trước';
+    else if ($diff < 3600) return floor($diff / 60) . ' phút trước';
+    else if ($diff < 86400) return floor($diff / 3600) . ' giờ trước';
+    else if ($diff < 604800) return floor($diff / 86400) . ' ngày trước';
+    else if ($diff < 2592000) return floor($diff / 604800) . ' tuần trước';
+    else return floor($diff / 2592000) . ' tháng trước';
+}
+
 // --- CẤU HÌNH PHÂN TRANG ---
 $limit = 12; // Số truyện mỗi trang
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -31,7 +45,9 @@ if ($currentCatId > 0) {
     // Lấy dữ liệu (Thêm LIMIT OFFSET)
     $stmt = $pdo->prepare("
         SELECT a.*, 
-               GROUP_CONCAT(DISTINCT auth.Name SEPARATOR ', ') as Authors 
+               GROUP_CONCAT(DISTINCT auth.Name SEPARATOR ', ') as Authors,
+               (SELECT c.`Index` FROM chapters c WHERE c.ArticleID = a.ArticleID AND c.IsDeleted = 0 ORDER BY c.CreatedAt DESC LIMIT 1) as LatestChapterIndex,
+               (SELECT c.CreatedAt FROM chapters c WHERE c.ArticleID = a.ArticleID AND c.IsDeleted = 0 ORDER BY c.CreatedAt DESC LIMIT 1) as LatestChapterDate
         FROM articles a
         LEFT JOIN articles_authors aa ON a.ArticleID = aa.ArticleID
         LEFT JOIN authors auth ON aa.AuthorID = auth.AuthorID
@@ -48,7 +64,9 @@ if ($currentCatId > 0) {
     // Lấy dữ liệu
     $stmt = $pdo->query("
         SELECT a.*, 
-               GROUP_CONCAT(DISTINCT auth.Name SEPARATOR ', ') as Authors 
+               GROUP_CONCAT(DISTINCT auth.Name SEPARATOR ', ') as Authors,
+               (SELECT c.`Index` FROM chapters c WHERE c.ArticleID = a.ArticleID AND c.IsDeleted = 0 ORDER BY c.CreatedAt DESC LIMIT 1) as LatestChapterIndex,
+               (SELECT c.CreatedAt FROM chapters c WHERE c.ArticleID = a.ArticleID AND c.IsDeleted = 0 ORDER BY c.CreatedAt DESC LIMIT 1) as LatestChapterDate
         FROM articles a
         LEFT JOIN articles_authors aa ON a.ArticleID = aa.ArticleID
         LEFT JOIN authors auth ON aa.AuthorID = auth.AuthorID
@@ -197,12 +215,14 @@ function renderContent($title, $list, $page, $totalPages, $baseUrl) {
                         <?php endif; ?>
                     </div>
                     <h4 class="card__title"><?= htmlspecialchars($art['Title']) ?></h4>
-                    <p class="card__author" style="font-size: 11px; color: var(--text-muted);">
+                    <p class="card__chapter" style="font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 4px;">
                         <?php 
-                        if (!empty($art['Authors'])) {
-                            echo htmlspecialchars(explode(', ', $art['Authors'])[0]); // Tác giả đầu tiên
+                        if (!empty($art['LatestChapterDate'])) {
+                            $chapterIndex = !empty($art['LatestChapterIndex']) ? $art['LatestChapterIndex'] : '?';
+                            $relativeTime = getRelativeTime($art['LatestChapterDate']);
+                            echo '<i class="fas fa-book-open"></i> Chương ' . $chapterIndex . ' - ' . $relativeTime;
                         } else {
-                            echo 'Đang cập nhật';
+                            echo '<i class="fas fa-book-open"></i> Chưa có chương';
                         }
                         ?>
                     </p>
