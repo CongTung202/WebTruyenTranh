@@ -100,12 +100,17 @@ if (isset($_SESSION['user_id'])) {
     if ($stmtCheck->rowCount() > 0) $isBookmarked = true;
 }
 
+$stmtFirstChap = $pdo->prepare("SELECT ChapterID FROM chapters WHERE ArticleID = ? AND IsDeleted = 0 ORDER BY `Index` ASC LIMIT 1");
+$stmtFirstChap->execute([$id]);
+$firstChapData = $stmtFirstChap->fetch();
+$firstChapID = $firstChapData ? $firstChapData['ChapterID'] : null;
+
 
 $pageTitle = htmlspecialchars($article['Title']);
 require_once 'includes/header.php'; 
 ?>
 
-<link rel="stylesheet" href="<?= BASE_URL ?>css/detail.css">
+<link rel="stylesheet" href="<?= BASE_URL ?>css/detail.css?v=1">
 
 <script>
     // Lưu BASE_URL để dùng trong JavaScript
@@ -155,7 +160,8 @@ require_once 'includes/header.php';
                     }
                     ?>
                 </div>
-
+            </div>
+        </div>
                 <div class="action-bar">
                     <button id="btn-follow-detail" class="btn-naver-green <?= $isBookmarked ? 'active' : '' ?>" data-id="<?= $article['ArticleID'] ?>">
                         <?php if ($isBookmarked): ?>
@@ -165,20 +171,22 @@ require_once 'includes/header.php';
                         <?php endif; ?>
                         <span class="count"><?= number_format($article['ViewCount']) ?></span>
                     </button>
+
+                    <?php if ($firstChapID): ?>
+                    <a href="<?= BASE_URL ?>chapter/<?= $article['ArticleID'] ?>/<?= $firstChapID ?>" class="btn-naver-white btn-read-first-action" title="Đọc từ chương 1">
+                        <i class="fas fa-book-open"></i> Đọc từ đầu
+                    </a>
+                    <?php else: ?>
+                        <button class="btn-naver-white disabled" disabled title="Chưa có chương nào">
+                            <i class="fas fa-book-open"></i> Đọc từ đầu
+                        </button>
+                    <?php endif; ?>
                     
                     <!-- NÚT COPY LINK -->
                     <button id="btn-copy-link" class="btn-copy-link" title="Copy link truyện">
                         <i class="fas fa-link"></i> Copy link
                     </button>
-                    
-                    <!-- NÚT SHARE -->
-                    <button class="btn-naver-white share-btn">
-                        <i class="fas fa-share-alt"></i>
-                    </button>
                 </div>
-            </div>
-        </div>
-
         <div class="divider"></div>
 
 <section class="chapter-section">

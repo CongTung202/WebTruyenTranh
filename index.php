@@ -87,6 +87,7 @@ $articlesTop = $stmtTop->fetchAll();
     <section class="section">
         <div class="section__header">
             <h3>Truyện nhiều lượt xem nhất</h3>
+            <a href="#" class="section__view-all">Xem tất cả ></a>
         </div>
 
         <div class="card-list">

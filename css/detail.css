@@ -175,67 +175,84 @@
     margin-bottom: 5px;
 }
 
-/* Cụm nút bấm Action Bar */
-.action-bar {
-    display: flex;
-    gap: 10px;
-    margin-top: auto; /* Đẩy xuống đáy */
-}
-
-/* Nút Xanh (Quan tâm) */
-.btn-naver-green {
-    background-color: var(--primary-theme); /* Màu xanh đặc trưng */
-    color: #fff;
-    border: none;
-    padding: 0 25px;
-    height: 48px;
-    border-radius: 2px; 
-    font-size: 15px;
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: 0.2s;
-}
-
-.btn-naver-green.active {
-    background-color: #333; /* Màu khi đã follow */
-    color: #aaa;
-}
-
-.btn-naver-green .count {
-    border-left: 1px solid rgba(255,255,255,0.3);
-    padding-left: 10px;
-    margin-left: 5px;
-    font-weight: normal;
-}
-
 /* Nút Trắng (Đọc tập đầu) */
-.btn-naver-white {
-    background-color: transparent;
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
-    padding: 0 20px;
-    height: 48px;
-    border-radius: 2px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
+/* Cụm nút bấm Action Bar - Sử dụng Grid để chia đều 3 cột */
+.action-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr; /* Chia thành 3 cột bằng nhau */
+    gap: 10px; /* Khoảng cách giữa các nút */
+    margin-top: auto;
+    width: 100%; /* Chiếm toàn bộ chiều rộng container */
+}
+
+/* Cập nhật style chung cho các nút để chúng lấp đầy cột grid của mình */
+.btn-naver-green, 
+.btn-naver-white,
+.btn-copy-link {
+    width: 100%; /* Giãn hết chiều rộng cột */
     display: flex;
     align-items: center;
     justify-content: center;
-    text-decoration: none;
-    transition: 0.2s;
+    height: 48px;
+    border-radius: 4px; /* Bo góc nhẹ thống nhất */
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none; /* Cho thẻ a */
+    box-sizing: border-box; /* Đảm bảo padding không làm vỡ layout */
+    white-space: nowrap; /* Tránh xuống dòng */
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.btn-naver-white:hover {
-    background-color: var(--bg-hover);
+/* Style riêng cho từng nút (màu sắc) */
+
+/* Nút Quan tâm (Xanh) */
+.btn-naver-green {
+    background-color: var(--primary-theme);
+    color: #fff;
+    border: 1px solid var(--primary-theme);
 }
 
-.share-btn {
-    width: 48px; /* Nút tròn */
-    padding: 0;
+.btn-naver-green.active {
+    background-color: #333;
+    border-color: #333;
+    color: #aaa;
+}
+
+/* Nút Đọc từ đầu (Trắng/Xám nhạt) - Class btn-naver-white đã có hoặc cập nhật */
+.btn-naver-white {
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+}
+
+.btn-naver-white i {
+    margin-right: 8px;
+}
+
+/* Nút Copy Link (Giống nút trắng nhưng có thể style riêng nếu muốn) */
+.btn-copy-link {
+    background-color: #fff;
+    color: #333;
+    border: 1px solid #ddd;
+}
+.btn-copy-link:hover {
+    background-color: #f8f9fa;
+    border-color: #ccc;
+}
+.btn-copy-link.copied {
+    background-color: #e6f7ff; /* Màu xanh nhạt khi copy xong */
+    border-color: #1890ff;
+    color: #1890ff;
+}
+
+/* Responsive cho màn hình nhỏ (Mobile) */
+@media (max-width: 600px) {
+    .action-bar {
+        grid-template-columns: 1fr; /* Trên mobile xếp chồng lên nhau */
+    }
 }
 
 /* Đường kẻ phân cách */
@@ -520,7 +537,7 @@
     color: #fff;
 }
 
-/* --- NÚT "ĐỌCMỚI NHẤT" VÀ "ĐỌC TỪ ĐẦU" --- */
+/* --- NÚT "ĐỌC MỚI NHẤT" VÀ "ĐỌC TỪ ĐẦU" --- */
 .btn-read-latest,
 .btn-read-first {
     background-color: transparent;

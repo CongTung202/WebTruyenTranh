@@ -1,0 +1,239 @@
+/* assets/css/profile.css */
+
+/* --- 1. Layout & Variables --- */
+:root {
+    --card-radius: 12px;
+    --transition-speed: 0.3s;
+}
+
+.profile-container { 
+    display: flex; 
+    gap: 30px; 
+    margin: 40px auto 80px; 
+    max-width: 1140px;
+    padding: 0 20px;
+    align-items: flex-start;
+}
+
+/* --- 2. Sidebar Profile Box --- */
+.profile-box { 
+    width: 300px;
+    flex-shrink: 0;
+    background: var(--bg-element); 
+    border-radius: var(--card-radius); 
+    border: 1px solid var(--border-color);
+    position: sticky;
+    top: 90px; /* Dính khi cuộn */
+    overflow: hidden; /* Để cắt ảnh bìa */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+/* Ảnh bìa giả lập (Gradient) */
+.profile-banner {
+    height: 120px;
+    background: linear-gradient(135deg, var(--primary-theme), #2c3e50);
+    position: relative;
+}
+
+/* Avatar nằm đè lên ảnh bìa */
+.avatar-wrapper { 
+    width: 120px;
+    height: 120px;
+    margin: -60px auto 15px; /* Kéo lên trên */
+    position: relative; 
+    z-index: 2;
+}
+
+.avatar-img { 
+    width: 100%; 
+    height: 100%; 
+    border-radius: 50%; 
+    object-fit: cover; 
+    border: 4px solid var(--bg-element); 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    background-color: #000;
+}
+
+/* Nút Camera */
+.btn-upload-cam {
+    position: absolute;
+    bottom: 5px; right: 5px;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--text-main);
+    color: var(--bg-body);
+    border: 2px solid var(--bg-element);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-speed);
+}
+.btn-upload-cam:hover { transform: scale(1.1); background: #fff; }
+
+/* Thông tin User */
+.profile-info { padding: 0 20px 30px; text-align: center; }
+
+.user-name { 
+    color: var(--text-main); 
+    font-size: 20px; 
+    font-weight: 700; 
+    margin-bottom: 5px; 
+}
+.user-email { 
+    color: var(--text-muted); 
+    font-size: 13px; 
+    margin-bottom: 15px; 
+}
+
+/* Badges (Role & Stats) */
+.profile-stats {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.stat-val { font-weight: bold; font-size: 16px; color: var(--text-main); }
+.stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; }
+
+.user-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.badge-admin { background: rgba(231, 76, 60, 0.2); color: #e74c3c; border: 1px solid #e74c3c; }
+.badge-member { background: rgba(46, 204, 113, 0.2); color: #2ecc71; border: 1px solid #2ecc71; }
+
+/* --- 3. Activity Box (Main Content) --- */
+.activity-box { 
+    flex: 1;
+    min-width: 0; /* Fix lỗi flexbox bị tràn */
+}
+
+.box-heading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--text-main);
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+/* Comment Item (Card Style) */
+.activity-list { display: flex; flex-direction: column; gap: 15px; }
+
+.activity-item { 
+    background: var(--bg-element); 
+    border: 1px solid var(--border-color);
+    border-radius: var(--card-radius);
+    padding: 20px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+
+.activity-item:hover { 
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border-color: var(--primary-theme);
+}
+
+.act-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.act-manga-title {
+    font-size: 15px;
+    font-weight: bold;
+    color: var(--primary-theme);
+    text-decoration: none;
+    transition: 0.2s;
+    display: flex; align-items: center; gap: 8px;
+}
+.act-manga-title:hover { color: #fff; }
+.act-manga-title i { font-size: 12px; opacity: 0.7; }
+
+.act-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex; align-items: center; gap: 15px;
+}
+
+.act-body {
+    background: var(--bg-body); /* Màu nền sẫm hơn cho nội dung comment */
+    padding: 12px 15px;
+    border-radius: 8px;
+    color: var(--text-main);
+    font-size: 14px;
+    line-height: 1.5;
+    position: relative;
+}
+/* Mũi tên trỏ lên (Bubble effect) */
+.act-body::before {
+    content: ''; position: absolute; top: -6px; left: 20px;
+    width: 0; height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid var(--bg-body);
+}
+
+/* Nút Xóa (Icon thùng rác) */
+.btn-del-cmt {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: 0.2s;
+}
+.btn-del-cmt:hover {
+    background: rgba(255, 77, 77, 0.15);
+    color: #ff4d4d;
+    border-color: #ff4d4d;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    background: var(--bg-element);
+    border-radius: var(--card-radius);
+    border: 1px dashed var(--border-color);
+}
+.empty-state i { font-size: 48px; margin-bottom: 15px; opacity: 0.3; }
+
+/* --- 4. Toast & Responsive --- */
+/* (Giữ nguyên Toast CSS cũ vì nó đã ổn) */
+.toast-container { position: fixed; top: 100px; right: 20px; z-index: 9999; }
+.custom-toast {
+    background: var(--bg-element); color: var(--text-main); padding: 15px 20px;
+    border-radius: 6px; border-left: 4px solid var(--primary-theme);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px;
+    transform: translateX(120%); transition: transform 0.3s ease; margin-bottom: 10px;
+}
+.custom-toast.show { transform: translateX(0); }
+.custom-toast.success { border-left-color: #2ecc71; }
+.custom-toast.error { border-left-color: #ff4d4d; }
+
+@media (max-width: 768px) {
+    .profile-container { flex-direction: column; }
+    .profile-box { width: 100%; position: static; }
+    .activity-item { padding: 15px; }
+}
