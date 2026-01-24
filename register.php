@@ -52,7 +52,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="css/login.css?v=<?= time() ?>">
 </head>
 <body>
-
+    <a href="<?= BASE_URL ?>" class="btn-back-home">
+        <i class="fas fa-arrow-left"></i> Quay lại trang chủ
+    </a>
     <div class="login-wrapper">
         
         <h1 class="login-logo">GTSC<strong>HUNDER</strong></h1>
@@ -60,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="login-card">
             
             <div class="login-tabs">
-                <a href="login.php" class="tab-item inactive">
+                <a href="<?= BASE_URL ?>login" class="tab-item inactive">
                     <i class="fas fa-sign-in-alt"></i> Đăng nhập
                 </a>
                 <div class="tab-item active">

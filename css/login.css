@@ -321,3 +321,32 @@ body {
 .footer-text strong { 
     color: var(--primary-theme); 
 }
+/* --- NÚT QUAY LẠI TRANG CHỦ --- */
+.btn-back-home {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Khoảng cách giữa icon và chữ */
+    transition: all 0.3s ease;
+    z-index: 100; /* Đảm bảo nút luôn nổi lên trên */
+}
+
+.btn-back-home:hover {
+    color: var(--primary-theme); /* Đổi màu khi hover */
+    transform: translateX(-5px); /* Hiệu ứng trượt sang trái nhẹ */
+}
+
+/* Ẩn nút này trên mobile nếu màn hình quá nhỏ (tùy chọn) */
+@media (max-width: 480px) {
+    .btn-back-home {
+        top: 15px;
+        left: 15px;
+        font-size: 12px;
+    }
+}
