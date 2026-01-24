@@ -49,12 +49,14 @@ if ($currentGenreId > 0) {
     // Lấy dữ liệu
     $sql = "SELECT a.*, 
                    GROUP_CONCAT(DISTINCT auth.Name SEPARATOR ', ') as Authors,
+                   GROUP_CONCAT(DISTINCT CONCAT(g.GenreID, ':', g.Name) SEPARATOR ', ') as GenreData,
                    (SELECT c.`Index` FROM chapters c WHERE c.ArticleID = a.ArticleID AND c.IsDeleted = 0 ORDER BY c.CreatedAt DESC LIMIT 1) as LatestChapterIndex,
                    (SELECT c.CreatedAt FROM chapters c WHERE c.ArticleID = a.ArticleID AND c.IsDeleted = 0 ORDER BY c.CreatedAt DESC LIMIT 1) as LatestChapterDate
             FROM articles a
             LEFT JOIN articles_authors aa ON a.ArticleID = aa.ArticleID
             LEFT JOIN authors auth ON aa.AuthorID = auth.AuthorID
             JOIN articles_genres ag ON a.ArticleID = ag.ArticleID
+            LEFT JOIN genres g ON ag.GenreID = g.GenreID
             WHERE ag.GenreID = ? AND a.IsDeleted = 0
             GROUP BY a.ArticleID
             ORDER BY a.UpdatedAt DESC LIMIT $limit OFFSET $offset";
@@ -68,11 +70,14 @@ if ($currentGenreId > 0) {
     $stmt = $pdo->query("
         SELECT a.*, 
                GROUP_CONCAT(DISTINCT auth.Name SEPARATOR ', ') as Authors,
+               GROUP_CONCAT(DISTINCT CONCAT(g.GenreID, ':', g.Name) SEPARATOR ', ') as GenreData,
                (SELECT c.`Index` FROM chapters c WHERE c.ArticleID = a.ArticleID AND c.IsDeleted = 0 ORDER BY c.CreatedAt DESC LIMIT 1) as LatestChapterIndex,
                (SELECT c.CreatedAt FROM chapters c WHERE c.ArticleID = a.ArticleID AND c.IsDeleted = 0 ORDER BY c.CreatedAt DESC LIMIT 1) as LatestChapterDate
         FROM articles a
         LEFT JOIN articles_authors aa ON a.ArticleID = aa.ArticleID
         LEFT JOIN authors auth ON aa.AuthorID = auth.AuthorID
+        LEFT JOIN articles_genres ag ON a.ArticleID = ag.ArticleID
+        LEFT JOIN genres g ON ag.GenreID = g.GenreID
         WHERE a.IsDeleted = 0 
         GROUP BY a.ArticleID
         ORDER BY a.UpdatedAt DESC LIMIT $limit OFFSET $offset
@@ -211,6 +216,19 @@ function renderGenreContent($title, $list, $page, $totalPages, $baseUrl) {
                     <?php endif; ?>
                 </div>
                 <h4 class="card__title"><?= htmlspecialchars($art['Title']) ?></h4>
+                <div class="card__genres" style="display: flex; gap: 4px; margin-bottom: 8px; flex-wrap: wrap;">
+                    <?php 
+                    if (!empty($art['GenreData'])) {
+                        $genreItems = explode(', ', $art['GenreData']);
+                        foreach (array_slice($genreItems, 0, 2) as $genreItem) {
+                            $parts = explode(':', $genreItem);
+                            $genreId = $parts[0] ?? '';
+                            $genreName = $parts[1] ?? '';
+                            echo '<a href="' . BASE_URL . 'genre/' . $genreId . '/" style="display: inline-block; background-color: var(--bg-hover); color: var(--text-muted); padding: 2px 6px; border-radius: 3px; font-size: 10px; border: 1px solid var(--border-color); text-decoration: none; transition: all 0.2s;" onmouseover="this.style.color=\'var(--primary-theme)\'; this.style.borderColor=\'var(--primary-theme)\';" onmouseout="this.style.color=\'var(--text-muted)\'; this.style.borderColor=\'var(--border-color)\';" onclick="event.stopPropagation();">' . htmlspecialchars(trim($genreName)) . '</a>';
+                        }
+                    }
+                    ?>
+                </div>
                 <p class="card__chapter" style="font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 4px;">
                     <?php 
                     if (!empty($art['LatestChapterDate'])) {

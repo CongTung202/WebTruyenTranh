@@ -53,6 +53,16 @@ RewriteRule ^chapter/([0-9]+)/([0-9]+)/?$ read.php?id=$1&chap=$2 [L,QSA]
 # Ví dụ: domain.com/the-loai/1 -> genres.php?genre_id=1
 RewriteRule ^genre/([0-9]+)/?$ genres.php?genre_id=$1 [L,QSA]
 
+# Trang danh sách tác giả
+# Định dạng: /authors
+# Ví dụ: domain.com/authors -> authors.php
+RewriteRule ^authors/?$ authors.php [L,QSA]
+
+# Trang chi tiết tác giả
+# Định dạng: /author/{AuthorID}
+# Ví dụ: domain.com/author/1 -> author-detail.php?id=1
+RewriteRule ^author/([0-9]+)/?$ author-detail.php?id=$1 [L,QSA]
+
 # ========================================
 # 4. COMPRESSION & PERFORMANCE
 # ========================================

@@ -44,7 +44,7 @@ if (!in_array($id, $_SESSION['viewed_articles'])) {
 }
 
 // 2. Lấy thông tin
-$sql = "SELECT a.*, GROUP_CONCAT(DISTINCT auth.Name SEPARATOR ', ') as Authors, GROUP_CONCAT(DISTINCT g.Name SEPARATOR ', ') as Genres 
+$sql = "SELECT a.*, GROUP_CONCAT(DISTINCT auth.Name SEPARATOR ', ') as Authors, GROUP_CONCAT(DISTINCT CONCAT(g.GenreID, ':', g.Name) SEPARATOR ', ') as GenreData 
         FROM articles a 
         LEFT JOIN articles_authors aa ON a.ArticleID = aa.ArticleID LEFT JOIN authors auth ON aa.AuthorID = auth.AuthorID 
         LEFT JOIN articles_genres ag ON a.ArticleID = ag.ArticleID LEFT JOIN genres g ON ag.GenreID = g.GenreID 
@@ -147,10 +147,13 @@ require_once 'includes/header.php';
 
                 <div class="meta-tags">
                     <?php 
-                    if (!empty($article['Genres'])) {
-                        $tags = explode(', ', $article['Genres']);
-                        foreach($tags as $tag) {
-                            echo '<span class="tag-item">#' . htmlspecialchars(trim($tag)) . '</span>';
+                    if (!empty($article['GenreData'])) {
+                        $genreItems = explode(', ', $article['GenreData']);
+                        foreach($genreItems as $genreItem) {
+                            $parts = explode(':', $genreItem);
+                            $genreId = $parts[0] ?? '';
+                            $genreName = $parts[1] ?? '';
+                            echo '<a href="' . BASE_URL . 'genre/' . $genreId . '/" class="tag-item" onclick="event.stopPropagation();">#' . htmlspecialchars(trim($genreName)) . '</a>';
                         }
                     }
                     ?>

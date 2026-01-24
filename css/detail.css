@@ -173,6 +173,14 @@
     font-size: 12px;
     margin-right: 5px;
     margin-bottom: 5px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.tag-item:hover {
+    color: var(--primary-theme);
+    border: 1px solid var(--primary-theme);
+    background-color: var(--bg-element);
 }
 
 /* Cụm nút bấm Action Bar */

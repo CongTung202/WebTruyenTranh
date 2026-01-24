@@ -48,6 +48,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <link rel="stylesheet" href="<?= BASE_URL ?>css/read.css">
     <?php endif; ?>
 
+    <?php if ($current_page == 'authors.php' || $current_page == 'author-detail.php'): ?>
+        <link rel="stylesheet" href="<?= BASE_URL ?>css/authors.css">
+    <?php endif; ?>
+
     <style>
         /* --- CSS CHO USER DROPDOWN (KHÔNG DÙNG BOOTSTRAP) --- */
         .user-menu-container {
@@ -311,6 +315,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <a href="<?= BASE_URL ?>genres" 
                class="nav__item <?= ($current_page == 'genres.php') ? 'nav__item--active' : '' ?>">
                Thể loại
+            </a>
+
+            <a href="<?= BASE_URL ?>authors" 
+               class="nav__item <?= ($current_page == 'authors.php' || $current_page == 'author-detail.php') ? 'nav__item--active' : '' ?>">
+               Tác Giả
             </a>
 
             <a href="<?= BASE_URL ?>types" 
