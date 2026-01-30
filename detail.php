@@ -110,7 +110,7 @@ $pageTitle = htmlspecialchars($article['Title']);
 require_once 'includes/header.php'; 
 ?>
 
-<link rel="stylesheet" href="<?= BASE_URL ?>css/detail.css?v=1">
+<link rel="stylesheet" href="<?= BASE_URL ?>css/detail.css?v=<?= time() ?>">
 
 <script>
     // Lưu BASE_URL để dùng trong JavaScript

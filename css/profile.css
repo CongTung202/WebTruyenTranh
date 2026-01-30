@@ -7,114 +7,106 @@
 }
 
 .profile-container { 
-    display: flex; 
     gap: 30px; 
-    margin: 40px auto 80px; 
     max-width: 1140px;
     padding: 0 20px;
     align-items: flex-start;
 }
 
 /* --- 2. Sidebar Profile Box --- */
+/* --- 2. Horizontal Profile Box --- */
 .profile-box { 
-    width: 300px;
-    flex-shrink: 0;
+    width: 100%; /* Full width */
     background: var(--bg-element); 
     border-radius: var(--card-radius); 
     border: 1px solid var(--border-color);
-    position: sticky;
-    top: 90px; /* Dính khi cuộn */
-    overflow: hidden; /* Để cắt ảnh bìa */
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
-
-/* Ảnh bìa giả lập (Gradient) */
-.profile-banner {
-    height: 120px;
-    background: linear-gradient(135deg, var(--primary-theme), #2c3e50);
     position: relative;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
 }
 
-/* Avatar nằm đè lên ảnh bìa */
+/* Hiệu ứng nền mờ blur phía sau */
+.box-backdrop {
+    position: absolute; top: -10%; left: -10%; 
+    width: 120%; height: 120%;
+    background-size: cover; background-position: center;
+    filter: blur(30px) brightness(0.4);
+    opacity: 0.3; z-index: 0;
+}
+
+/* Container nội dung chính */
+.profile-row {
+    position: relative; z-index: 1;
+    display: flex;
+    align-items: center;
+    padding: 30px;
+    gap: 30px;
+}
+
+/* CỘT 1: Avatar */
+.profile-left { flex-shrink: 0; }
 .avatar-wrapper { 
-    width: 120px;
-    height: 120px;
-    margin: -60px auto 15px; /* Kéo lên trên */
+    width: 100px; height: 100px;
     position: relative; 
-    z-index: 2;
+    margin: 0; /* Xóa margin cũ */
 }
-
 .avatar-img { 
-    width: 100%; 
-    height: 100%; 
+    width: 100%; height: 100%; 
     border-radius: 50%; 
     object-fit: cover; 
-    border: 4px solid var(--bg-element); 
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    background-color: #000;
+    border: 3px solid var(--bg-body); 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
-
-/* Nút Camera */
 .btn-upload-cam {
-    position: absolute;
-    bottom: 5px; right: 5px;
-    width: 34px; height: 34px;
-    border-radius: 50%;
-    background: var(--text-main);
-    color: var(--bg-body);
+    position: absolute; bottom: 0; right: 0;
+    width: 30px; height: 30px;
+    background: var(--primary-theme); color: #fff;
     border: 2px solid var(--bg-element);
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    transition: var(--transition-speed);
+    border-radius: 50%;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: 0.2s;
 }
-.btn-upload-cam:hover { transform: scale(1.1); background: #fff; }
+.btn-upload-cam:hover { transform: scale(1.1); }
 
-/* Thông tin User */
-.profile-info { padding: 0 20px 30px; text-align: center; }
+/* CỘT 2: Thông tin (Căn giữa hàng) */
+.profile-center { 
+    flex-grow: 1; 
+    display: flex; flex-direction: column; gap: 8px;
+    padding-right: 20px;
+    border-right: 1px solid var(--border-color); /* Vạch ngăn cách */
+}
 
 .user-name { 
-    color: var(--text-main); 
-    font-size: 20px; 
-    font-weight: 700; 
-    margin-bottom: 5px; 
+    font-size: 24px; font-weight: 800; color: var(--text-main); margin: 0;
+    display: flex; align-items: center; gap: 15px;
 }
-.user-email { 
-    color: var(--text-muted); 
-    font-size: 13px; 
-    margin-bottom: 15px; 
+.user-email, .join-date { 
+    color: var(--text-muted); font-size: 14px; margin: 0; display: flex; align-items: center; gap: 8px;
 }
-
-/* Badges (Role & Stats) */
-.profile-stats {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border-color);
-}
-
-.stat-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.stat-val { font-weight: bold; font-size: 16px; color: var(--text-main); }
-.stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; }
-
 .user-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: bold;
-    text-transform: uppercase;
+    font-size: 10px; padding: 3px 8px; border-radius: 4px; vertical-align: middle; letter-spacing: 0.5px;
 }
-.badge-admin { background: rgba(231, 76, 60, 0.2); color: #e74c3c; border: 1px solid #e74c3c; }
-.badge-member { background: rgba(46, 204, 113, 0.2); color: #2ecc71; border: 1px solid #2ecc71; }
+.badge-admin { background: #e74c3c; color: #fff; border: none; }
+.badge-member { background: var(--bg-body); color: var(--text-muted); border: 1px solid var(--border-color); }
+
+/* CỘT 3: Stats (Bên phải cùng) */
+.profile-right {
+    display: flex; align-items: center; gap: 30px; padding-left: 10px;
+}
+.stat-box {
+    text-align: center; min-width: 80px;
+}
+.stat-val { 
+    display: block; font-size: 28px; font-weight: bold; color: var(--primary-theme); 
+    line-height: 1; margin-bottom: 5px;
+}
+.stat-label { 
+    font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;
+}
 
 /* --- 3. Activity Box (Main Content) --- */
 .activity-box { 
+    margin-top: 20px;
     flex: 1;
     min-width: 0; /* Fix lỗi flexbox bị tràn */
 }
@@ -181,6 +173,11 @@
     font-size: 14px;
     line-height: 1.5;
     position: relative;
+
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-all;
+    max-width: 100%;
 }
 /* Mũi tên trỏ lên (Bubble effect) */
 .act-body::before {
@@ -236,4 +233,17 @@
     .profile-container { flex-direction: column; }
     .profile-box { width: 100%; position: static; }
     .activity-item { padding: 15px; }
+}
+
+@media (max-width: 768px) {
+    .profile-row { flex-direction: column; text-align: center; gap: 20px; padding: 25px 15px; }
+    
+    .profile-center { 
+        border-right: none; padding-right: 0; width: 100%;
+        border-bottom: 1px solid var(--border-color); padding-bottom: 20px;
+    }
+    
+    .user-name { justify-content: center; flex-direction: column; gap: 5px; }
+    .user-email, .join-date { justify-content: center; }
+    .profile-right { padding-left: 0; width: 100%; justify-content: center; }
 }

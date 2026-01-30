@@ -62,9 +62,6 @@ require_once 'includes/header.php';
 ?>
 
 <link rel="stylesheet" href="<?= BASE_URL ?>css/profile.css?v=<?= time() ?>">
-
-
-
 <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/profile.css?v=<?= time() ?>">
 
 <div class="toast-container" id="toastContainer"></div>
@@ -73,38 +70,44 @@ require_once 'includes/header.php';
     <div class="profile-container">
         
         <div class="profile-box">
-            <div class="profile-banner"></div>
+            <div class="box-backdrop" style="background-image: url('<?= getImageUrl($_SESSION['avatar']) ?>')"></div>
+            
+            <div class="profile-row">
+                <div class="profile-left">
+                    <div class="avatar-wrapper">
+                        <img src="<?= getImageUrl($_SESSION['avatar']) ?>" class="avatar-img">
+                        
+                        <form id="avatarForm" method="POST" enctype="multipart/form-data" style="display: none;">
+                            <input type="file" name="avatar_file" id="avatarInput" accept="image/*">
+                        </form>
 
-            <div class="profile-info">
-                <div class="avatar-wrapper">
-                    <img src="<?= getImageUrl($_SESSION['avatar']) ?>" class="avatar-img">
-                    
-                    <form id="avatarForm" method="POST" enctype="multipart/form-data" style="display: none;">
-                        <input type="file" name="avatar_file" id="avatarInput" accept="image/*">
-                    </form>
-
-                    <button class="btn-upload-cam" type="button" onclick="document.getElementById('avatarInput').click();" title="Đổi ảnh đại diện">
-                        <i class="fas fa-camera"></i>
-                    </button>
+                        <button class="btn-upload-cam" type="button" onclick="document.getElementById('avatarInput').click();" title="Đổi ảnh đại diện">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <h4 class="user-name"><?= htmlspecialchars($user['UserName']) ?></h4>
-                <p class="user-email"><?= htmlspecialchars($user['Email']) ?></p>
-                
-                <span class="user-badge <?= $user['Role'] == 1 ? 'badge-admin' : 'badge-member' ?>">
-                    <?= $user['Role'] == 1 ? 'Quản trị viên' : 'Thành viên' ?>
-                </span>
+                <div class="profile-center">
+                    <h4 class="user-name">
+                        <?= htmlspecialchars($user['UserName']) ?>
+                        <span class="user-badge <?= $user['Role'] == 1 ? 'badge-admin' : 'badge-member' ?>">
+                            <?= $user['Role'] == 1 ? 'Quản trị viên' : 'Thành viên' ?>
+                        </span>
+                    </h4>
+                    <p class="user-email">
+                        <i class="far fa-envelope"></i> <?= htmlspecialchars($user['Email']) ?>
+                    </p>
+                    <p class="join-date">
+                        <i class="far fa-calendar-alt"></i> Tham gia: <?= date('d/m/Y', strtotime($user['CreatedAt'] ?? 'now')) ?>
+                    </p>
+                </div>
 
-                <div class="profile-stats">
-                    <div class="stat-item">
+                <div class="profile-right">
+                    <div class="stat-box">
                         <span class="stat-val"><?= $totalComments ?></span>
                         <span class="stat-label">Bình luận</span>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-val"><?= date('d/m/y', strtotime($user['CreatedAt'] ?? 'now')) ?></span>
-                        <span class="stat-label">Tham gia</span>
                     </div>
-                </div>
             </div>
         </div>
 
